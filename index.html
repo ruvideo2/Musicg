@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 sm:space-x-3">
             <button onclick="openAudioSettings()" class="flex items-center space-x-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-emerald-400 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-sm">
                 <i class="fa-solid fa-sliders text-sm"></i>
                 <span class="hidden sm:inline">Эквалайзер & Бас</span>
@@ -100,7 +100,7 @@
             </button>
             <button onclick="fetchGitHubMusic()" class="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shadow-lg shadow-emerald-600/20 active:scale-95">
                 <i class="fa-solid fa-rotate-right" id="syncIcon"></i>
-                <span>Синхронизировать</span>
+                <span class="hidden sm:inline">Синхронизировать</span>
             </button>
         </div>
     </header>
@@ -133,13 +133,28 @@
                 </button>
             </div>
 
-            <div class="bg-gradient-to-br from-zinc-900/80 to-zinc-950 border border-zinc-800/80 rounded-2xl p-5 shadow-xl">
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-2 flex items-center space-x-1.5">
-                    <i class="fa-solid fa-circle-info"></i>
+            <!-- Local file upload box -->
+            <div class="bg-gradient-to-br from-zinc-900/80 to-zinc-950 border border-zinc-800/80 rounded-2xl p-5 shadow-xl space-y-3">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>Загрузка с ПК</span>
+                </h3>
+                <p class="text-[11px] text-zinc-400 leading-relaxed">
+                    Если GitHub API выдает ошибку или лимит, вы можете загрузить свои аудиофайлы прямо с компьютера:
+                </p>
+                <label class="block w-full text-center bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all">
+                    <i class="fa-solid fa-upload mr-1.5"></i> Выбрать MP3 файлы
+                    <input type="file" id="localFileInput" accept="audio/*" multiple onchange="handleLocalFiles(event)" class="hidden">
+                </label>
+            </div>
+
+            <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-5 shadow-xl">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-circle-info text-emerald-400"></i>
                     <span>Инструкция</span>
                 </h3>
                 <p class="text-xs text-zinc-400 leading-relaxed">
-                    Загружайте треки в формате <code class="text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded">.mp3</code> в репозиторий <b class="text-zinc-200">ruvideo2/Musicg</b>. Нажмите «Синхронизировать», и они появятся здесь в реальном времени!
+                    Если треки не отображаются, проверьте доступность репозитория <b class="text-zinc-200">ruvideo2/Musicg</b> или воспользуйтесь демо-треками / загрузкой с ПК.
                 </p>
             </div>
         </div>
@@ -254,11 +269,14 @@
                     <input type="text" id="inputFolder" placeholder="оставьте пустым для корня" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
-            <div class="mt-6 flex items-center justify-end space-x-3">
-                <button onclick="resetToDefault()" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2">Сбросить в демо</button>
-                <button onclick="saveConfig()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20">
-                    Сохранить
-                </button>
+            <div class="mt-6 flex items-center justify-between">
+                <button onclick="loadDemoTracks()" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold px-2 py-2">Демо-треки</button>
+                <div class="flex items-center space-x-2">
+                    <button onclick="closeConfigModal()" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2">Отмена</button>
+                    <button onclick="saveConfig()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20">
+                        Сохранить
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -346,6 +364,13 @@
                 title: "LoFi Study Session",
                 artist: "Chillhop GitHub",
                 download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+                source: "Демо Трек"
+            },
+            {
+                name: "Bass Test Track.mp3",
+                title: "Hardbass Anthem",
+                artist: "GitBeat Audio",
+                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
                 source: "Демо Трек"
             }
         ];
@@ -493,7 +518,13 @@
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
-                    throw new Error(`GitHub API Error: ${response.status} (${response.statusText})`);
+                    if (response.status === 403) {
+                        throw new Error('Превышен лимит запросов GitHub API (Rate limit). Включите демо-треки или загрузите свои.');
+                    } else if (response.status === 404) {
+                        throw new Error('Репозиторий или папка не найдены / приватный репозиторий.');
+                    } else {
+                        throw new Error(`GitHub API Error: ${response.status} (${response.statusText})`);
+                    }
                 }
                 const data = await response.json();
                 
@@ -526,18 +557,47 @@
                     filterTracks();
                     showNotification(`Загружено треков из GitHub: ${tracks.length}`, 'success');
                 } else {
-                    tracks = [];
+                    tracks = [...defaultTracks];
                     filterTracks();
-                    showNotification('В репозитории не найдены .mp3 файлы. Загрузите их в репо.', 'warning');
+                    showNotification('В репозитории нет .mp3 файлов. Загружены демо-треки.', 'warning');
                 }
             } catch (error) {
                 console.error('GitHub fetch error:', error);
-                tracks = [];
+                tracks = [...defaultTracks];
                 filterTracks();
-                showNotification(`Ошибка GitHub: ${error.message}`, 'error');
+                showNotification(error.message || 'Ошибка загрузки из GitHub. Включены демо-треки.', 'error');
             } finally {
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
             }
+        }
+
+        function handleLocalFiles(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            const newLocalTracks = Array.from(files).map(file => {
+                let cleanName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                let artist = "Локальный файл";
+                let title = cleanName;
+
+                if (cleanName.includes('-')) {
+                    const parts = cleanName.split('-');
+                    artist = parts[0].trim();
+                    title = parts.slice(1).join('-').trim();
+                }
+
+                return {
+                    name: file.name,
+                    title: title,
+                    artist: artist,
+                    download_url: URL.createObjectURL(file),
+                    source: "ПК (Локально)"
+                };
+            });
+
+            tracks = [...newLocalTracks, ...tracks];
+            filterTracks();
+            showNotification(`Загружено локальных треков: ${newLocalTracks.length}`, 'success');
         }
 
         function renderTrackList() {
@@ -549,9 +609,9 @@
             if (filteredTracks.length === 0) {
                 container.innerHTML = `
                     <div class="py-16 text-center text-zinc-400 text-xs flex flex-col items-center justify-center space-y-3">
-                        <i class="fa-brands fa-github text-3xl text-zinc-600"></i>
-                        <p class="font-semibold text-zinc-300">Треки не найдены в репозитории ${repoConfig.owner}/${repoConfig.repo}</p>
-                        <p class="text-zinc-500 max-w-sm">Убедитесь, что репозиторий публичный и в корне лежит файл .mp3. Нажмите кнопку «Синхронизировать».</p>
+                        <i class="fa-solid fa-music text-3xl text-zinc-600"></i>
+                        <p class="font-semibold text-zinc-300">Треки отсутствуют</p>
+                        <p class="text-zinc-500 max-w-sm">Нажмите кнопку «Загрузить с ПК» слева или настройте репозиторий.</p>
                     </div>
                 `;
                 return;
@@ -867,18 +927,12 @@
             await fetchGitHubMusic();
         }
 
-        function resetToDefault() {
-            repoConfig = { owner: '', repo: '', branch: 'main', folder: '' };
-            localStorage.removeItem('gitbeat_owner');
-            localStorage.removeItem('gitbeat_repo');
-            localStorage.removeItem('gitbeat_branch');
-            localStorage.removeItem('gitbeat_folder');
-
+        function loadDemoTracks() {
             tracks = [...defaultTracks];
             filterTracks();
             closeConfigModal();
             updateConfigUI();
-            showNotification('Включены демо-треки', 'info');
+            showNotification('Включены демо-треки', 'success');
         }
 
         function updateConfigUI() {
