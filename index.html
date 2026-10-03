@@ -112,16 +112,16 @@
             <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
                 <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 flex items-center justify-between">
                     <span>Репозиторий</span>
-                    <span id="sourceBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">Стандартные треки</span>
+                    <span id="sourceBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">GitHub API</span>
                 </h2>
                 <div class="space-y-2 text-xs">
                     <div class="flex justify-between py-1 border-b border-zinc-800/60">
                         <span class="text-zinc-500">Владелец:</span>
-                        <span id="lblOwner" class="font-medium text-zinc-300 truncate max-w-[140px]">GitHub</span>
+                        <span id="lblOwner" class="font-medium text-zinc-300 truncate max-w-[140px]">ruvideo2</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-zinc-800/60">
                         <span class="text-zinc-500">Репозиторий:</span>
-                        <span id="lblRepo" class="font-medium text-zinc-300 truncate max-w-[140px]">Music Playlist</span>
+                        <span id="lblRepo" class="font-medium text-zinc-300 truncate max-w-[140px]">Musicg</span>
                     </div>
                     <div class="flex justify-between py-1">
                         <span class="text-zinc-500">Ветка:</span>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
                 <button onclick="openConfigModal()" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 rounded-xl text-xs font-medium transition-all text-center border border-zinc-700/50">
-                    Подключить свой GitHub
+                    Изменить репозиторий
                 </button>
             </div>
 
@@ -139,7 +139,7 @@
                     <span>Инструкция</span>
                 </h3>
                 <p class="text-xs text-zinc-400 leading-relaxed">
-                    Загружайте треки в формате <code class="text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded">.mp3</code> в свой репозиторий GitHub. Нажмите «Синхронизировать», и они мгновенно появятся в списке!
+                    Загружайте треки в формате <code class="text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded">.mp3</code> в репозиторий <b class="text-zinc-200">ruvideo2/Musicg</b>. Нажмите «Синхронизировать», и они появятся здесь в реальном времени!
                 </p>
             </div>
         </div>
@@ -239,11 +239,11 @@
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Владелец (Username / Org)</label>
-                    <input type="text" id="inputOwner" placeholder="например: octocat" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="inputOwner" placeholder="например: ruvideo2" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Репозиторий</label>
-                    <input type="text" id="inputRepo" placeholder="например: music-repo" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="inputRepo" placeholder="например: Musicg" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Ветка</label>
@@ -251,11 +251,11 @@
                 </div>
                 <div>
                     <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Папка (опционально)</label>
-                    <input type="text" id="inputFolder" placeholder="music" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="inputFolder" placeholder="оставьте пустым для корня" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
             <div class="mt-6 flex items-center justify-end space-x-3">
-                <button onclick="resetToDefault()" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2">Сбросить</button>
+                <button onclick="resetToDefault()" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2">Сбросить в демо</button>
                 <button onclick="saveConfig()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20">
                     Сохранить
                 </button>
@@ -333,7 +333,6 @@
     <audio id="audioPlayer" crossorigin="anonymous"></audio>
 
     <script>
-        // High-availability robust default tracks
         const defaultTracks = [
             {
                 name: "Cyberpunk Sunrise.mp3",
@@ -348,25 +347,11 @@
                 artist: "Chillhop GitHub",
                 download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
                 source: "Демо Трек"
-            },
-            {
-                name: "Deep Space Ambient.mp3",
-                title: "Deep Space Ambient",
-                artist: "Cosmic Octocat",
-                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-                source: "Демо Трек"
-            },
-            {
-                name: "Electric Phonk Beat.mp3",
-                title: "Electric Phonk Beat",
-                artist: "Repository Beats",
-                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-                source: "Демо Трек"
             }
         ];
 
-        let tracks = [...defaultTracks];
-        let filteredTracks = [...defaultTracks];
+        let tracks = [];
+        let filteredTracks = [];
         let currentIndex = 0;
         let isPlaying = false;
         let isShuffle = false;
@@ -385,8 +370,8 @@
         let compressorNode = null;
 
         let repoConfig = {
-            owner: localStorage.getItem('gitbeat_owner') || '',
-            repo: localStorage.getItem('gitbeat_repo') || '',
+            owner: localStorage.getItem('gitbeat_owner') !== null ? localStorage.getItem('gitbeat_owner') : 'ruvideo2',
+            repo: localStorage.getItem('gitbeat_repo') !== null ? localStorage.getItem('gitbeat_repo') : 'Musicg',
             branch: localStorage.getItem('gitbeat_branch') || 'main',
             folder: localStorage.getItem('gitbeat_folder') || ''
         };
@@ -394,11 +379,13 @@
         const audio = document.getElementById('audioPlayer');
 
         window.addEventListener('DOMContentLoaded', () => {
-            renderTrackList();
             updateConfigUI();
             
             if (repoConfig.owner && repoConfig.repo) {
                 fetchGitHubMusic();
+            } else {
+                tracks = [...defaultTracks];
+                filterTracks();
             }
 
             audio.addEventListener('timeupdate', updateProgress);
@@ -505,11 +492,13 @@
 
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('GitHub API Error');
+                if (!response.ok) {
+                    throw new Error(`GitHub API Error: ${response.status} (${response.statusText})`);
+                }
                 const data = await response.json();
                 
                 const audioExtensions = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
-                const fetchedTracks = data
+                const fetchedTracks = (Array.isArray(data) ? data : [data])
                     .filter(item => item.type === 'file' && audioExtensions.some(ext => item.name.toLowerCase().endsWith(ext)))
                     .map(item => {
                         const rawUrl = `https://raw.githubusercontent.com/${repoConfig.owner}/${repoConfig.repo}/${repoConfig.branch}/${item.path}`;
@@ -528,7 +517,7 @@
                             title: title,
                             artist: artist,
                             download_url: rawUrl,
-                            source: 'GitHub Репо'
+                            source: `${repoConfig.owner}/${repoConfig.repo}`
                         };
                     });
 
@@ -537,11 +526,15 @@
                     filterTracks();
                     showNotification(`Загружено треков из GitHub: ${tracks.length}`, 'success');
                 } else {
-                    showNotification('В репозитории не найдено аудио, показаны стандартные треки.', 'warning');
+                    tracks = [];
+                    filterTracks();
+                    showNotification('В репозитории не найдены .mp3 файлы. Загрузите их в репо.', 'warning');
                 }
             } catch (error) {
                 console.error('GitHub fetch error:', error);
-                showNotification('Ошибка загрузки из GitHub. Используются демо треки.', 'error');
+                tracks = [];
+                filterTracks();
+                showNotification(`Ошибка GitHub: ${error.message}`, 'error');
             } finally {
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
             }
@@ -555,9 +548,10 @@
 
             if (filteredTracks.length === 0) {
                 container.innerHTML = `
-                    <div class="py-16 text-center text-zinc-500 text-xs flex flex-col items-center justify-center space-y-2">
-                        <i class="fa-solid fa-folder-open text-2xl text-zinc-600"></i>
-                        <p>Треки не найдены</p>
+                    <div class="py-16 text-center text-zinc-400 text-xs flex flex-col items-center justify-center space-y-3">
+                        <i class="fa-brands fa-github text-3xl text-zinc-600"></i>
+                        <p class="font-semibold text-zinc-300">Треки не найдены в репозитории ${repoConfig.owner}/${repoConfig.repo}</p>
+                        <p class="text-zinc-500 max-w-sm">Убедитесь, что репозиторий публичный и в корне лежит файл .mp3. Нажмите кнопку «Синхронизировать».</p>
                     </div>
                 `;
                 return;
@@ -644,7 +638,7 @@
 
         function togglePlayPause() {
             if (tracks.length === 0) return;
-            if (!audio.src) {
+            if (!audio.src && tracks.length > 0) {
                 loadTrack(0, true);
                 return;
             }
@@ -746,7 +740,6 @@
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
-        // Bass & DSP persistence
         function openAudioSettings() {
             if (!audioCtx) initAudioContext();
             document.getElementById('audioSettingsModal').classList.remove('hidden');
@@ -885,7 +878,7 @@
             filterTracks();
             closeConfigModal();
             updateConfigUI();
-            showNotification('Сброшено на стандартные треки', 'info');
+            showNotification('Включены демо-треки', 'info');
         }
 
         function updateConfigUI() {
@@ -896,7 +889,7 @@
             if (repoConfig.owner && repoConfig.repo) {
                 document.getElementById('sourceBadge').textContent = 'GitHub API';
             } else {
-                document.getElementById('sourceBadge').textContent = 'Стандартные треки';
+                document.getElementById('sourceBadge').textContent = 'Демо режим';
             }
         }
 
@@ -926,7 +919,7 @@
             toast.className = `fixed top-20 right-4 z-50 ${bg} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs font-medium flex items-center space-x-2`;
             toast.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>${message}</span>`;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
+            setTimeout(() => toast.remove(), 4000);
         }
     </script>
 </body>
