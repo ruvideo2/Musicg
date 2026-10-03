@@ -33,7 +33,6 @@
             color: #f3f4f6;
             overflow-x: hidden;
         }
-        /* Custom smooth scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -48,7 +47,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #3f3f46;
         }
-        /* Custom Range Slider styling */
         input[type=range] {
             -webkit-appearance: none;
             background: transparent;
@@ -87,18 +85,18 @@
             </div>
             <div>
                 <h1 class="font-bold text-lg tracking-wide bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">GitBeat</h1>
-                <p class="text-xs text-zinc-400">Музыка из GitHub репозитория в реальном времени</p>
+                <p class="text-xs text-zinc-400">GitHub Music Streamer & Hardcore Bass</p>
             </div>
         </div>
 
         <div class="flex items-center space-x-3">
             <button onclick="openAudioSettings()" class="flex items-center space-x-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-emerald-400 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-sm">
                 <i class="fa-solid fa-sliders text-sm"></i>
-                <span class="hidden sm:inline">Басс & Эквалайзер</span>
+                <span class="hidden sm:inline">Эквалайзер & Бас</span>
             </button>
             <button onclick="openConfigModal()" class="flex items-center space-x-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-zinc-200 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-sm">
                 <i class="fa-brands fa-github text-sm"></i>
-                <span id="repoIndicator" class="hidden sm:inline">Настроить репо</span>
+                <span id="repoIndicator" class="hidden sm:inline">GitHub Репо</span>
             </button>
             <button onclick="fetchGitHubMusic()" class="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shadow-lg shadow-emerald-600/20 active:scale-95">
                 <i class="fa-solid fa-rotate-right" id="syncIcon"></i>
@@ -111,67 +109,58 @@
         
         <!-- Left Sidebar / Info Panel -->
         <div class="lg:col-span-1 space-y-6">
-            <!-- Active Source Info -->
             <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
                 <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 flex items-center justify-between">
-                    <span>Источник</span>
-                    <span id="sourceBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">Демо Режим</span>
+                    <span>Репозиторий</span>
+                    <span id="sourceBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">Стандартные треки</span>
                 </h2>
                 <div class="space-y-2 text-xs">
                     <div class="flex justify-between py-1 border-b border-zinc-800/60">
                         <span class="text-zinc-500">Владелец:</span>
-                        <span id="lblOwner" class="font-medium text-zinc-300 truncate max-w-[140px]">Демо</span>
+                        <span id="lblOwner" class="font-medium text-zinc-300 truncate max-w-[140px]">GitHub</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-zinc-800/60">
                         <span class="text-zinc-500">Репозиторий:</span>
-                        <span id="lblRepo" class="font-medium text-zinc-300 truncate max-w-[140px]">GitHub Music</span>
+                        <span id="lblRepo" class="font-medium text-zinc-300 truncate max-w-[140px]">Music Playlist</span>
                     </div>
                     <div class="flex justify-between py-1">
-                        <span class="text-zinc-500">Папка / Ветка:</span>
-                        <span id="lblBranch" class="font-medium text-zinc-300 truncate max-w-[140px]">main / music</span>
+                        <span class="text-zinc-500">Ветка:</span>
+                        <span id="lblBranch" class="font-medium text-zinc-300 truncate max-w-[140px]">main</span>
                     </div>
                 </div>
                 <button onclick="openConfigModal()" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 rounded-xl text-xs font-medium transition-all text-center border border-zinc-700/50">
-                    Изменить репозиторий
+                    Подключить свой GitHub
                 </button>
             </div>
 
-            <!-- Quick Instructions -->
             <div class="bg-gradient-to-br from-zinc-900/80 to-zinc-950 border border-zinc-800/80 rounded-2xl p-5 shadow-xl">
                 <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-2 flex items-center space-x-1.5">
                     <i class="fa-solid fa-circle-info"></i>
-                    <span>Как это работает?</span>
+                    <span>Инструкция</span>
                 </h3>
-                <ol class="text-xs text-zinc-400 space-y-2 list-decimal list-inside leading-relaxed">
-                    <li>Создайте публичный репозиторий на GitHub.</li>
-                    <li>Загрузите туда файлы (.mp3, .wav, .m4a) в папку или корень.</li>
-                    <li>Укажите репозиторий в настройках сверху.</li>
-                    <li>Треки появятся мгновенно! Новые файлы подгружаются автоматически.</li>
-                </ol>
+                <p class="text-xs text-zinc-400 leading-relaxed">
+                    Загружайте треки в формате <code class="text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded">.mp3</code> в свой репозиторий GitHub. Нажмите «Синхронизировать», и они мгновенно появятся в списке!
+                </p>
             </div>
         </div>
 
-        <!-- Right / Main Playlist Area -->
+        <!-- Right Playlist Section -->
         <div class="lg:col-span-3 space-y-4">
-            
-            <!-- Search and Filter Bar -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-3 backdrop-blur-sm">
                 <div class="relative w-full sm:w-72">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-                    <input type="text" id="searchInput" oninput="filterTracks()" placeholder="Поиск треков или исполнителей..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-all">
+                    <input type="text" id="searchInput" oninput="filterTracks()" placeholder="Поиск треков..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-all">
                 </div>
                 <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
                     <span id="trackCount" class="text-xs text-zinc-500 px-2">0 треков</span>
                     <button onclick="playAll()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-md shadow-emerald-600/20">
                         <i class="fa-solid fa-play text-[10px]"></i>
-                        <span>Воспроизвести все</span>
+                        <span>Воспроизвести всё</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Playlist Table / Grid Container -->
             <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-sm shadow-xl min-h-[400px] flex flex-col">
-                <!-- Table Header -->
                 <div class="grid grid-cols-12 px-4 py-3 border-b border-zinc-800 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
                     <div class="col-span-1 text-center">#</div>
                     <div class="col-span-7 sm:col-span-6">Название / Исполнитель</div>
@@ -179,12 +168,10 @@
                     <div class="col-span-4 sm:col-span-2 text-right pr-3">Действия</div>
                 </div>
 
-                <!-- Track List Body -->
                 <div id="trackList" class="divide-y divide-zinc-800/40 flex-1 overflow-y-auto max-h-[550px]">
-                    <!-- Dynamically populated tracks -->
+                    <!-- Tracks rendered dynamically -->
                 </div>
             </div>
-
         </div>
 
     </main>
@@ -192,7 +179,6 @@
     <footer class="fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/95 border-t border-zinc-800/80 backdrop-blur-xl px-4 py-3 shadow-2xl">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 items-center gap-4">
             
-            <!-- Current Track Info -->
             <div class="flex items-center space-x-3 min-w-0">
                 <div id="currentCover" class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-zinc-800 flex items-center justify-center shrink-0 shadow-md overflow-hidden relative">
                     <i class="fa-solid fa-music text-zinc-300 text-base" id="currentCoverIcon"></i>
@@ -203,7 +189,6 @@
                 </div>
             </div>
 
-            <!-- Playback Controls & Progress Bar -->
             <div class="flex flex-col items-center space-y-1.5 w-full">
                 <div class="flex items-center space-x-6">
                     <button onclick="toggleShuffle()" id="shuffleBtn" class="text-zinc-400 hover:text-zinc-100 text-xs transition-colors" title="Перемешать">
@@ -223,15 +208,13 @@
                     </button>
                 </div>
 
-                <!-- Scrub Bar -->
                 <div class="w-full flex items-center space-x-3 text-[11px] text-zinc-400">
                     <span id="currentTime" class="w-8 text-right font-mono">0:00</span>
-                    <input type="range" id="progressBar" value="0" min="0" max="100" step="0.1" oninput="seekTrack(this.value)" class="flex-1 cursor-pointer">
+                    <input type="range" id="progressBar" value="0" min="0" max="100" step="0.1" class="flex-1 cursor-pointer">
                     <span id="totalDuration" class="w-8 font-mono">0:00</span>
                 </div>
             </div>
 
-            <!-- Volume & Extra Controls -->
             <div class="hidden md:flex items-center justify-end space-x-3">
                 <button onclick="toggleMute()" id="muteBtn" class="text-zinc-400 hover:text-zinc-200 text-xs p-1">
                     <i class="fa-solid fa-volume-high"></i>
@@ -243,7 +226,7 @@
     </footer>
 
     <div id="configModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-base text-zinc-100 flex items-center space-x-2">
                     <i class="fa-brands fa-github text-emerald-500"></i>
@@ -253,50 +236,43 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-
-            <p class="text-xs text-zinc-400 mb-4 leading-relaxed">
-                Укажите публичный репозиторий GitHub, откуда сайт будет автоматически подгружать аудиофайлы (.mp3, .wav, .m4a, .ogg).
-            </p>
-
-            <div class="space-y-3">
+            <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">Владелец (Username / Organization)</label>
-                    <input type="text" id="inputOwner" placeholder="например: octocat" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Владелец (Username / Org)</label>
+                    <input type="text" id="inputOwner" placeholder="например: octocat" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">Название репозитория</label>
-                    <input type="text" id="inputRepo" placeholder="например: my-music-repo" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Репозиторий</label>
+                    <input type="text" id="inputRepo" placeholder="например: music-repo" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">Ветка (branch)</label>
-                    <input type="text" id="inputBranch" placeholder="main" value="main" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Ветка</label>
+                    <input type="text" id="inputBranch" value="main" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">Папка (опционально, оставьте пустым для корня)</label>
-                    <input type="text" id="inputFolder" placeholder="music" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Папка (опционально)</label>
+                    <input type="text" id="inputFolder" placeholder="music" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
-
             <div class="mt-6 flex items-center justify-end space-x-3">
-                <button onclick="resetToDemo()" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2">Сбросить на демо</button>
-                <button onclick="saveConfig()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-600/20">
-                    Подключить
+                <button onclick="resetToDefault()" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2">Сбросить</button>
+                <button onclick="saveConfig()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20">
+                    Сохранить
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Hardcore Audio & Bass Settings Modal -->
     <div id="audioSettingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
                 <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center">
                         <i class="fa-solid fa-sliders text-sm"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-zinc-100">Hardcore Audio & Bass Booster</h3>
-                        <p class="text-[10px] text-zinc-400">Web Audio API DSP (LowShelf, Peak, Compressor)</p>
+                        <h3 class="font-bold text-sm text-zinc-100">Hardcore Bass Booster & EQ</h3>
+                        <p class="text-[10px] text-zinc-400">Web Audio API DSP Processor</p>
                     </div>
                 </div>
                 <button onclick="closeAudioSettings()" class="text-zinc-400 hover:text-zinc-200 text-sm p-1.5 rounded-xl hover:bg-zinc-800">
@@ -304,92 +280,49 @@
                 </button>
             </div>
 
-            <div class="space-y-5">
-                <!-- Preset Buttons -->
+            <div class="space-y-5 text-xs">
                 <div>
-                    <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Пресеты звука</label>
+                    <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-2">Пресеты</label>
                     <div class="grid grid-cols-4 gap-2">
-                        <button onclick="applyPreset('flat')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs py-2 rounded-xl font-medium transition-all border border-zinc-700/50">Стоковый</button>
-                        <button onclick="applyPreset('hardBass')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-xs py-2 rounded-xl font-semibold transition-all">🔥 Жёсткий Бас</button>
-                        <button onclick="applyPreset('megaSub')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/30 text-xs py-2 rounded-xl font-semibold transition-all">💥 Mega Sub</button>
-                        <button onclick="applyPreset('vocalBoost')" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 text-xs py-2 rounded-xl font-semibold transition-all">🎤 Вокал+</button>
+                        <button onclick="applyPreset('flat')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-xl font-medium">Стоковый</button>
+                        <button onclick="applyPreset('hardBass')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2 rounded-xl font-semibold">🔥 Жёсткий Бас</button>
+                        <button onclick="applyPreset('megaSub')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/30 py-2 rounded-xl font-semibold">💥 Mega Sub</button>
+                        <button onclick="applyPreset('vocalBoost')" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 py-2 rounded-xl font-semibold">🎤 Вокал+</button>
                     </div>
                 </div>
 
-                <!-- Hardcore Bass Master Section -->
                 <div class="bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-4 space-y-4">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-emerald-400 flex items-center space-x-1.5">
+                        <span class="font-bold text-emerald-400 flex items-center space-x-1.5">
                             <i class="fa-solid fa-bolt"></i>
                             <span>Усиление басов (Bass Boost)</span>
                         </span>
-                        <span id="bassGainVal" class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+15 дБ</span>
+                        <span id="bassGainVal" class="font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+15 дБ</span>
                     </div>
-                    <div>
-                        <div class="flex justify-between text-[10px] text-zinc-500 mb-1">
-                            <span>0 дБ (Норма)</span>
-                            <span>+15 дБ (Жёстко)</span>
-                            <span>+30 дБ (Безумие 🔥)</span>
-                        </div>
-                        <input type="range" id="bassGainSlider" min="0" max="30" step="1" value="15" oninput="updateBassGain(this.value); saveDSPConfig();" class="w-full">
-                    </div>
+                    <input type="range" id="bassGainSlider" min="0" max="30" step="1" value="15" oninput="updateBassGain(this.value)" class="w-full">
+                </div>
 
-                    <div class="grid grid-cols-2 gap-3 pt-2">
-                        <div>
-                            <label class="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">Частота саб-баса</label>
-                            <select id="subBassFreqSelect" onchange="updateSubBassFreq(this.value); saveDSPConfig();" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500">
-                                <option value="40">40 Гц (Самый глубокий)</option>
-                                <option value="60" selected>60 Гц (Плотный клубный)</option>
-                                <option value="80">80 Гц (Punchy Bass)</option>
-                                <option value="120">120 Гц (Мясистый)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">Режим лимитера</label>
-                            <select id="limiterModeSelect" onchange="updateLimiterMode(this.value); saveDSPConfig();" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500">
-                                <option value="heavy" selected>Тяжелый (Без хрипов)</option>
-                                <option value="extreme">Экстремальный (Макс. кач)</option>
-                                <option value="off">Выключен (Осторожно!)</option>
-                            </select>
-                        </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-zinc-950/40 border border-zinc-800/80 rounded-xl p-3 text-center space-y-2">
+                        <span class="font-medium text-zinc-300">Бас (Low)</span>
+                        <input type="range" id="eqLow" min="-15" max="25" step="0.5" value="6" oninput="updateEQ()" class="w-full">
+                        <span id="eqLowVal" class="font-mono text-emerald-400">+6 дБ</span>
+                    </div>
+                    <div class="bg-zinc-950/40 border border-zinc-800/80 rounded-xl p-3 text-center space-y-2">
+                        <span class="font-medium text-zinc-300">Средние (Mid)</span>
+                        <input type="range" id="eqMid" min="-15" max="15" step="0.5" value="0" oninput="updateEQ()" class="w-full">
+                        <span id="eqMidVal" class="font-mono text-zinc-400">0 дБ</span>
+                    </div>
+                    <div class="bg-zinc-950/40 border border-zinc-800/80 rounded-xl p-3 text-center space-y-2">
+                        <span class="font-medium text-zinc-300">Высокие (High)</span>
+                        <input type="range" id="eqHigh" min="-15" max="20" step="0.5" value="4" oninput="updateEQ()" class="w-full">
+                        <span id="eqHighVal" class="font-mono text-emerald-400">+4 дБ</span>
                     </div>
                 </div>
 
-                <!-- 3-Band Equalizer -->
-                <div>
-                    <label class="block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-3">Графический Эквалайзер</label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <!-- Low EQ -->
-                        <div class="bg-zinc-950/40 border border-zinc-800/80 rounded-xl p-3 text-center space-y-2">
-                            <span class="text-[11px] font-medium text-zinc-300">Бас (Low)</span>
-                            <div class="my-2">
-                                <input type="range" id="eqLow" min="-15" max="25" step="0.5" value="6" oninput="updateEQ(); saveDSPConfig();" class="w-full">
-                            </div>
-                            <span id="eqLowVal" class="text-[11px] font-mono text-emerald-400">+6 дБ</span>
-                        </div>
-                        <!-- Mid EQ -->
-                        <div class="bg-zinc-950/40 border border-zinc-800/80 rounded-xl p-3 text-center space-y-2">
-                            <span class="text-[11px] font-medium text-zinc-300">Средние (Mid)</span>
-                            <div class="my-2">
-                                <input type="range" id="eqMid" min="-15" max="15" step="0.5" value="0" oninput="updateEQ(); saveDSPConfig();" class="w-full">
-                            </div>
-                            <span id="eqMidVal" class="text-[11px] font-mono text-zinc-400">0 дБ</span>
-                        </div>
-                        <!-- High EQ -->
-                        <div class="bg-zinc-950/40 border border-zinc-800/80 rounded-xl p-3 text-center space-y-2">
-                            <span class="text-[11px] font-medium text-zinc-300">Высокие (High)</span>
-                            <div class="my-2">
-                                <input type="range" id="eqHigh" min="-15" max="20" step="0.5" value="4" oninput="updateEQ(); saveDSPConfig();" class="w-full">
-                            </div>
-                            <span id="eqHighVal" class="text-[11px] font-mono text-emerald-400">+4 дБ</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick toggles -->
                 <div class="flex items-center justify-between pt-2">
-                    <button onclick="resetAudioDSP()" class="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2">Сбросить настройки</button>
-                    <button onclick="closeAudioSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-600/20">
+                    <button onclick="resetAudioDSP()" class="text-zinc-400 hover:text-zinc-200">Сбросить</button>
+                    <button onclick="closeAudioSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20">
                         Готово
                     </button>
                 </div>
@@ -397,13 +330,43 @@
         </div>
     </div>
 
-    <!-- Hidden Audio Element -->
     <audio id="audioPlayer" crossorigin="anonymous"></audio>
 
     <script>
-        // State management variables
-        let tracks = [];
-        let filteredTracks = [];
+        // High-availability robust default tracks
+        const defaultTracks = [
+            {
+                name: "Cyberpunk Sunrise.mp3",
+                title: "Cyberpunk Sunrise",
+                artist: "GitBeat Synthwave",
+                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+                source: "Демо Трек"
+            },
+            {
+                name: "LoFi Study Session.mp3",
+                title: "LoFi Study Session",
+                artist: "Chillhop GitHub",
+                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+                source: "Демо Трек"
+            },
+            {
+                name: "Deep Space Ambient.mp3",
+                title: "Deep Space Ambient",
+                artist: "Cosmic Octocat",
+                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+                source: "Демо Трек"
+            },
+            {
+                name: "Electric Phonk Beat.mp3",
+                title: "Electric Phonk Beat",
+                artist: "Repository Beats",
+                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+                source: "Демо Трек"
+            }
+        ];
+
+        let tracks = [...defaultTracks];
+        let filteredTracks = [...defaultTracks];
         let currentIndex = 0;
         let isPlaying = false;
         let isShuffle = false;
@@ -412,7 +375,6 @@
         let previousVolume = 0.8;
         let isSeeking = false;
 
-        // Web Audio API DSP Nodes
         let audioCtx = null;
         let sourceNode = null;
         let bassFilterNode = null;
@@ -422,7 +384,6 @@
         let eqHighNode = null;
         let compressorNode = null;
 
-        // GitHub settings (stored in localStorage or default demo)
         let repoConfig = {
             owner: localStorage.getItem('gitbeat_owner') || '',
             repo: localStorage.getItem('gitbeat_repo') || '',
@@ -430,50 +391,21 @@
             folder: localStorage.getItem('gitbeat_folder') || ''
         };
 
-        // Demo fallback tracks
-        const demoTracks = [
-            {
-                name: "Cyberpunk Sunrise.mp3",
-                title: "Cyberpunk Sunrise",
-                artist: "GitBeat Synthwave",
-                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-                source: "Demo Track"
-            },
-            {
-                name: "LoFi Study Session.mp3",
-                title: "LoFi Study Session",
-                artist: "Chillhop GitHub",
-                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-                source: "Demo Track"
-            },
-            {
-                name: "Deep Space Ambient.mp3",
-                title: "Deep Space Ambient",
-                artist: "Cosmic Octocat",
-                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-                source: "Demo Track"
-            },
-            {
-                name: "Electric Chill.mp3",
-                title: "Electric Chill",
-                artist: "Repository Beats",
-                download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-                source: "Demo Track"
-            }
-        ];
-
         const audio = document.getElementById('audioPlayer');
 
         window.addEventListener('DOMContentLoaded', () => {
-            initApp();
+            renderTrackList();
+            updateConfigUI();
             
-            // Audio event listeners
+            if (repoConfig.owner && repoConfig.repo) {
+                fetchGitHubMusic();
+            }
+
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('ended', handleTrackEnded);
             audio.addEventListener('loadedmetadata', () => {
                 const dur = audio.duration || 0;
                 document.getElementById('totalDuration').textContent = formatTime(dur);
-                // Re-apply DSP to ensure settings persist on new track load
                 applySavedDSPConfig();
             });
             audio.addEventListener('play', () => {
@@ -486,9 +418,25 @@
                 updatePlayPauseButton();
                 renderTrackList();
             });
+
+            const pBar = document.getElementById('progressBar');
+            if (pBar) {
+                pBar.addEventListener('input', (e) => {
+                    isSeeking = true;
+                    if (audio.duration) {
+                        const targetTime = (e.target.value / 100) * audio.duration;
+                        document.getElementById('currentTime').textContent = formatTime(targetTime);
+                    }
+                });
+                pBar.addEventListener('change', (e) => {
+                    if (audio.duration) {
+                        audio.currentTime = (e.target.value / 100) * audio.duration;
+                    }
+                    isSeeking = false;
+                });
+            }
         });
 
-        // Initialize Web Audio API pipeline
         function initAudioContext() {
             if (audioCtx) return;
             try {
@@ -526,10 +474,7 @@
 
                 compressorNode = audioCtx.createDynamicsCompressor();
                 compressorNode.threshold.value = -18;
-                compressorNode.knee.value = 12;
                 compressorNode.ratio.value = 8;
-                compressorNode.attack.value = 0.003;
-                compressorNode.release.value = 0.25;
 
                 sourceNode
                     .connect(subBassFilterNode)
@@ -540,42 +485,9 @@
                     .connect(compressorNode)
                     .connect(audioCtx.destination);
 
-                // Load saved DSP settings after initialization
                 applySavedDSPConfig();
             } catch (e) {
-                console.error("Web Audio API initialization failed:", e);
-            }
-        }
-
-        async function initApp() {
-            updateConfigUI();
-            if (repoConfig.owner && repoConfig.repo) {
-                await fetchGitHubMusic();
-            } else {
-                loadDemoTracks();
-            }
-        }
-
-        function updateConfigUI() {
-            document.getElementById('lblOwner').textContent = repoConfig.owner || 'Не задан';
-            document.getElementById('lblRepo').textContent = repoConfig.repo || 'Демо Режим';
-            document.getElementById('lblBranch').textContent = (repoConfig.branch || 'main') + (repoConfig.folder ? ' / ' + repoConfig.folder : '');
-            
-            if (repoConfig.owner && repoConfig.repo) {
-                document.getElementById('sourceBadge').textContent = 'GitHub API';
-                document.getElementById('sourceBadge').className = 'text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30';
-            } else {
-                document.getElementById('sourceBadge').textContent = 'Демо Режим';
-                document.getElementById('sourceBadge').className = 'text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30';
-            }
-        }
-
-        function loadDemoTracks() {
-            tracks = [...demoTracks];
-            filteredTracks = [...tracks];
-            renderTrackList();
-            if (tracks.length > 0 && !audio.src) {
-                loadTrack(0, false);
+                console.error("Audio Context Error:", e);
             }
         }
 
@@ -584,7 +496,6 @@
             if (syncIcon) syncIcon.classList.add('fa-spin');
 
             if (!repoConfig.owner || !repoConfig.repo) {
-                loadDemoTracks();
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
                 return;
             }
@@ -594,9 +505,7 @@
 
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`GitHub API error: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error('GitHub API Error');
                 const data = await response.json();
                 
                 const audioExtensions = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
@@ -604,7 +513,6 @@
                     .filter(item => item.type === 'file' && audioExtensions.some(ext => item.name.toLowerCase().endsWith(ext)))
                     .map(item => {
                         const rawUrl = `https://raw.githubusercontent.com/${repoConfig.owner}/${repoConfig.repo}/${repoConfig.branch}/${item.path}`;
-                        
                         let cleanName = item.name.substring(0, item.name.lastIndexOf('.'));
                         let artist = repoConfig.owner;
                         let title = cleanName;
@@ -620,23 +528,20 @@
                             title: title,
                             artist: artist,
                             download_url: rawUrl,
-                            source: 'GitHub Repo'
+                            source: 'GitHub Репо'
                         };
                     });
 
                 if (fetchedTracks.length > 0) {
                     tracks = fetchedTracks;
-                    filteredTracks = [...tracks];
-                    renderTrackList();
-                    showNotification(`Успешно загружено треков: ${tracks.length} из GitHub!`, 'success');
+                    filterTracks();
+                    showNotification(`Загружено треков из GitHub: ${tracks.length}`, 'success');
                 } else {
-                    showNotification('В репозитории не найдено аудиофайлов. Загружены демо-треки.', 'warning');
-                    loadDemoTracks();
+                    showNotification('В репозитории не найдено аудио, показаны стандартные треки.', 'warning');
                 }
             } catch (error) {
-                console.error('Error fetching GitHub repo:', error);
-                showNotification('Ошибка связи с GitHub API. Проверьте имя репозитория.', 'error');
-                loadDemoTracks();
+                console.error('GitHub fetch error:', error);
+                showNotification('Ошибка загрузки из GitHub. Используются демо треки.', 'error');
             } finally {
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
             }
@@ -645,6 +550,8 @@
         function renderTrackList() {
             const container = document.getElementById('trackList');
             document.getElementById('trackCount').textContent = `${filteredTracks.length} треков`;
+
+            if (!container) return;
 
             if (filteredTracks.length === 0) {
                 container.innerHTML = `
@@ -678,7 +585,7 @@
                             <span class="bg-zinc-800/80 px-2 py-0.5 rounded text-[10px] text-zinc-400">${track.source}</span>
                         </div>
                         <div class="col-span-4 sm:col-span-2 text-right flex items-center justify-end space-x-2">
-                            <a href="${track.download_url}" target="_blank" onclick="event.stopPropagation()" class="text-zinc-500 hover:text-zinc-200 p-1.5 rounded-lg hover:bg-zinc-800 transition-colors" title="Скачать файл">
+                            <a href="${track.download_url}" target="_blank" onclick="event.stopPropagation()" class="text-zinc-500 hover:text-zinc-200 p-1.5 rounded-lg hover:bg-zinc-800 transition-colors" title="Скачать">
                                 <i class="fa-solid fa-download text-xs"></i>
                             </a>
                             <button onclick="event.stopPropagation(); selectAndPlayTrack('${track.download_url}')" class="w-8 h-8 rounded-full bg-zinc-800 group-hover:bg-emerald-600 text-zinc-300 group-hover:text-white flex items-center justify-center transition-all shadow-sm">
@@ -705,8 +612,7 @@
                     togglePlayPause();
                     return;
                 }
-                currentIndex = index;
-                loadTrack(currentIndex, true);
+                loadTrack(index, true);
             }
         }
 
@@ -719,9 +625,6 @@
             document.getElementById('currentTitle').textContent = track.title;
             document.getElementById('currentArtist').textContent = track.artist;
 
-            const coverDiv = document.getElementById('currentCover');
-            coverDiv.className = `w-12 h-12 rounded-xl bg-gradient-to-br ${getAvatarGradient(track.title)} flex items-center justify-center shrink-0 shadow-md overflow-hidden relative`;
-
             renderTrackList();
 
             if (playFlag) {
@@ -732,7 +635,7 @@
                     isPlaying = true;
                     updatePlayPauseButton();
                 }).catch(e => {
-                    console.error('Playback error:', e);
+                    console.error('Play error:', e);
                     isPlaying = false;
                     updatePlayPauseButton();
                 });
@@ -741,7 +644,7 @@
 
         function togglePlayPause() {
             if (tracks.length === 0) return;
-            if (!audio.src && tracks.length > 0) {
+            if (!audio.src) {
                 loadTrack(0, true);
                 return;
             }
@@ -752,9 +655,7 @@
             if (isPlaying) {
                 audio.pause();
             } else {
-                audio.play().catch(e => {
-                    console.error('Playback error:', e);
-                });
+                audio.play().catch(e => console.error(e));
             }
         }
 
@@ -793,25 +694,15 @@
         function toggleShuffle() {
             isShuffle = !isShuffle;
             const btn = document.getElementById('shuffleBtn');
-            if (isShuffle) {
-                btn.classList.add('text-emerald-400');
-                showNotification('Перемешивание включено', 'info');
-            } else {
-                btn.classList.remove('text-emerald-400');
-                showNotification('Перемешивание выключено', 'info');
-            }
+            if (isShuffle) btn.classList.add('text-emerald-400');
+            else btn.classList.remove('text-emerald-400');
         }
 
         function toggleRepeat() {
             isRepeat = !isRepeat;
             const btn = document.getElementById('repeatBtn');
-            if (isRepeat) {
-                btn.classList.add('text-emerald-400');
-                showNotification('Повтор трека включен', 'info');
-            } else {
-                btn.classList.remove('text-emerald-400');
-                showNotification('Повтор трека выключен', 'info');
-            }
+            if (isRepeat) btn.classList.add('text-emerald-400');
+            else btn.classList.remove('text-emerald-400');
         }
 
         function updateProgress() {
@@ -822,39 +713,13 @@
             document.getElementById('currentTime').textContent = formatTime(current);
             if (duration > 0) {
                 document.getElementById('totalDuration').textContent = formatTime(duration);
-                const percent = (current / duration) * 100;
-                document.getElementById('progressBar').value = percent;
-            } else {
-                document.getElementById('progressBar').value = 0;
+                document.getElementById('progressBar').value = (current / duration) * 100;
             }
         }
-
-        function seekTrack(val) {
-            isSeeking = true;
-            if (audio.duration) {
-                const targetTime = (val / 100) * audio.duration;
-                document.getElementById('currentTime').textContent = formatTime(targetTime);
-            }
-        }
-
-        // On mouseup / touchend for progress bar to finalize seek
-        document.addEventListener('DOMContentLoaded', () => {
-            const pBar = document.getElementById('progressBar');
-            if (pBar) {
-                pBar.addEventListener('change', (e) => {
-                    if (audio.duration) {
-                        audio.currentTime = (e.target.value / 100) * audio.duration;
-                    }
-                    isSeeking = false;
-                });
-            }
-        });
 
         function setVolume(val) {
-            const vol = val / 100;
-            audio.volume = vol;
-            isMuted = (vol === 0);
-            updateMuteButtonUI();
+            audio.volume = val / 100;
+            isMuted = (audio.volume === 0);
         }
 
         function toggleMute() {
@@ -868,25 +733,10 @@
                 document.getElementById('volumeBar').value = audio.volume * 100;
                 isMuted = false;
             }
-            updateMuteButtonUI();
-        }
-
-        function updateMuteButtonUI() {
-            const muteBtn = document.querySelector('#muteBtn i');
-            if (!muteBtn) return;
-            if (isMuted || audio.volume === 0) {
-                muteBtn.className = "fa-solid fa-volume-xmark text-rose-400";
-            } else if (audio.volume < 0.5) {
-                muteBtn.className = "fa-solid fa-volume-low";
-            } else {
-                muteBtn.className = "fa-solid fa-volume-high";
-            }
         }
 
         function playAll() {
-            if (tracks.length > 0) {
-                loadTrack(0, true);
-            }
+            if (tracks.length > 0) loadTrack(0, true);
         }
 
         function formatTime(seconds) {
@@ -896,7 +746,7 @@
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
-        // Audio Settings & Hardcore Bass controls
+        // Bass & DSP persistence
         function openAudioSettings() {
             if (!audioCtx) initAudioContext();
             document.getElementById('audioSettingsModal').classList.remove('hidden');
@@ -909,8 +759,6 @@
         function saveDSPConfig() {
             const config = {
                 bassGain: document.getElementById('bassGainSlider').value,
-                subBassFreq: document.getElementById('subBassFreqSelect').value,
-                limiterMode: document.getElementById('limiterModeSelect').value,
                 eqLow: document.getElementById('eqLow').value,
                 eqMid: document.getElementById('eqMid').value,
                 eqHigh: document.getElementById('eqHigh').value
@@ -927,26 +775,12 @@
                     document.getElementById('bassGainSlider').value = config.bassGain;
                     updateBassGain(config.bassGain, false);
                 }
-                if (config.subBassFreq !== undefined) {
-                    document.getElementById('subBassFreqSelect').value = config.subBassFreq;
-                    updateSubBassFreq(config.subBassFreq, false);
-                }
-                if (config.limiterMode !== undefined) {
-                    document.getElementById('limiterModeSelect').value = config.limiterMode;
-                    updateLimiterMode(config.limiterMode, false);
-                }
-                if (config.eqLow !== undefined) {
-                    document.getElementById('eqLow').value = config.eqLow;
-                }
-                if (config.eqMid !== undefined) {
-                    document.getElementById('eqMid').value = config.eqMid;
-                }
-                if (config.eqHigh !== undefined) {
-                    document.getElementById('eqHigh').value = config.eqHigh;
-                }
+                if (config.eqLow !== undefined) document.getElementById('eqLow').value = config.eqLow;
+                if (config.eqMid !== undefined) document.getElementById('eqMid').value = config.eqMid;
+                if (config.eqHigh !== undefined) document.getElementById('eqHigh').value = config.eqHigh;
                 updateEQ(false);
             } catch (e) {
-                console.error("Error loading saved DSP config:", e);
+                console.error(e);
             }
         }
 
@@ -954,35 +788,9 @@
             if (!audioCtx) initAudioContext();
             const gain = parseFloat(val);
             document.getElementById('bassGainVal').textContent = `+${gain} дБ`;
-            
             if (subBassFilterNode && bassFilterNode) {
                 subBassFilterNode.gain.value = gain;
                 bassFilterNode.gain.value = gain * 0.8;
-            }
-            if (save) saveDSPConfig();
-        }
-
-        function updateSubBassFreq(freq, save = true) {
-            if (!audioCtx) initAudioContext();
-            if (subBassFilterNode) {
-                subBassFilterNode.frequency.value = parseInt(freq);
-            }
-            if (save) saveDSPConfig();
-        }
-
-        function updateLimiterMode(mode, save = true) {
-            if (!audioCtx) initAudioContext();
-            if (!compressorNode) return;
-
-            if (mode === 'heavy') {
-                compressorNode.threshold.value = -18;
-                compressorNode.ratio.value = 8;
-            } else if (mode === 'extreme') {
-                compressorNode.threshold.value = -24;
-                compressorNode.ratio.value = 16;
-            } else if (mode === 'off') {
-                compressorNode.threshold.value = 0;
-                compressorNode.ratio.value = 1;
             }
             if (save) saveDSPConfig();
         }
@@ -1006,49 +814,30 @@
 
         function applyPreset(preset) {
             if (!audioCtx) initAudioContext();
-
             if (preset === 'flat') {
                 document.getElementById('bassGainSlider').value = 0;
                 updateBassGain(0, false);
-                document.getElementById('subBassFreqSelect').value = '60';
-                updateSubBassFreq(60, false);
                 document.getElementById('eqLow').value = 0;
                 document.getElementById('eqMid').value = 0;
                 document.getElementById('eqHigh').value = 0;
-                document.getElementById('limiterModeSelect').value = 'heavy';
-                updateLimiterMode('heavy', false);
-                showNotification('Сброшено на стоковый звук', 'info');
             } else if (preset === 'hardBass') {
                 document.getElementById('bassGainSlider').value = 22;
                 updateBassGain(22, false);
-                document.getElementById('subBassFreqSelect').value = '60';
-                updateSubBassFreq(60, false);
                 document.getElementById('eqLow').value = 12;
                 document.getElementById('eqMid').value = -2;
                 document.getElementById('eqHigh').value = 6;
-                document.getElementById('limiterModeSelect').value = 'heavy';
-                updateLimiterMode('heavy', false);
-                showNotification('🔥 Включен режим "Жёсткий Бас"!', 'success');
             } else if (preset === 'megaSub') {
                 document.getElementById('bassGainSlider').value = 30;
                 updateBassGain(30, false);
-                document.getElementById('subBassFreqSelect').value = '40';
-                updateSubBassFreq(40, false);
                 document.getElementById('eqLow').value = 18;
                 document.getElementById('eqMid').value = -4;
                 document.getElementById('eqHigh').value = 8;
-                document.getElementById('limiterModeSelect').value = 'extreme';
-                updateLimiterMode('extreme', false);
-                showNotification('💥 Включен экстремальный "Mega Sub"!', 'success');
             } else if (preset === 'vocalBoost') {
                 document.getElementById('bassGainSlider').value = 5;
                 updateBassGain(5, false);
                 document.getElementById('eqLow').value = 2;
                 document.getElementById('eqMid').value = 8;
                 document.getElementById('eqHigh').value = 6;
-                document.getElementById('limiterModeSelect').value = 'heavy';
-                updateLimiterMode('heavy', false);
-                showNotification('🎤 Пресет вокала активирован', 'info');
             }
             updateEQ(true);
         }
@@ -1085,17 +874,30 @@
             await fetchGitHubMusic();
         }
 
-        async function resetToDemo() {
+        function resetToDefault() {
             repoConfig = { owner: '', repo: '', branch: 'main', folder: '' };
             localStorage.removeItem('gitbeat_owner');
             localStorage.removeItem('gitbeat_repo');
             localStorage.removeItem('gitbeat_branch');
             localStorage.removeItem('gitbeat_folder');
 
+            tracks = [...defaultTracks];
+            filterTracks();
             closeConfigModal();
             updateConfigUI();
-            loadDemoTracks();
-            showNotification('Сброшено на демо-режим', 'info');
+            showNotification('Сброшено на стандартные треки', 'info');
+        }
+
+        function updateConfigUI() {
+            document.getElementById('lblOwner').textContent = repoConfig.owner || 'GitHub';
+            document.getElementById('lblRepo').textContent = repoConfig.repo || 'Music Playlist';
+            document.getElementById('lblBranch').textContent = repoConfig.branch || 'main';
+            
+            if (repoConfig.owner && repoConfig.repo) {
+                document.getElementById('sourceBadge').textContent = 'GitHub API';
+            } else {
+                document.getElementById('sourceBadge').textContent = 'Стандартные треки';
+            }
         }
 
         function getAvatarGradient(str) {
@@ -1103,21 +905,15 @@
                 "from-emerald-600 to-teal-800",
                 "from-indigo-600 to-violet-800",
                 "from-rose-600 to-pink-800",
-                "from-amber-600 to-orange-800",
-                "from-cyan-600 to-blue-800",
-                "from-fuchsia-600 to-purple-800"
+                "from-amber-600 to-orange-800"
             ];
             let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            }
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
             return gradients[Math.abs(hash) % gradients.length];
         }
 
         function escapeHtml(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
         function showNotification(message, type = 'success') {
@@ -1127,17 +923,10 @@
             const toast = document.createElement('div');
             toast.id = 'toastNotification';
             const bg = type === 'error' ? 'bg-rose-600' : type === 'warning' ? 'bg-amber-600' : 'bg-emerald-600';
-            toast.className = `fixed top-20 right-4 z-50 ${bg} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs font-medium flex items-center space-x-2 animate-in slide-in-from-top-5 duration-300`;
-            toast.innerHTML = `
-                <i class="fa-solid ${type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-check'} text-sm"></i>
-                <span>${message}</span>
-            `;
+            toast.className = `fixed top-20 right-4 z-50 ${bg} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs font-medium flex items-center space-x-2`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>${message}</span>`;
             document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            setTimeout(() => toast.remove(), 3500);
         }
     </script>
 </body>
