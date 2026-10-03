@@ -302,7 +302,7 @@
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
                 <h3 class="font-bold text-sm text-zinc-100 flex items-center space-x-2">
                     <i class="fa-solid fa-sliders text-emerald-400"></i>
-                    <span>Продвинутый Эквалайзер и Бас-буст</span>
+                    <span>Продвинутый Эквалайзер и Регулировка Баса</span>
                 </h3>
                 <button onclick="closeAudioSettings()" class="text-zinc-400 hover:text-zinc-200 text-sm p-1 rounded-lg hover:bg-zinc-800">
                     <i class="fa-solid fa-xmark"></i>
@@ -313,29 +313,30 @@
                 <!-- Preset buttons -->
                 <div>
                     <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-2">Пресеты звучания</label>
-                    <div class="grid grid-cols-3 gap-2">
+                    <div class="grid grid-cols-4 gap-2">
                         <button onclick="applyPreset('normal')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-1.5 rounded-lg text-xs font-medium border border-zinc-700/50">Обычный</button>
+                        <button onclick="applyPreset('nobass')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-400 py-1.5 rounded-lg text-xs font-medium border border-zinc-700/50">Без баса</button>
                         <button onclick="applyPreset('hardbass')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 py-1.5 rounded-lg text-xs font-medium border border-emerald-500/40 font-semibold">Hard Bass</button>
-                        <button onclick="applyPreset('electronic')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-1.5 rounded-lg text-xs font-medium border border-zinc-700/50">Electronic</button>
+                        <button onclick="applyPreset('electronic')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-1.5 rounded-lg text-xs font-medium border border-zinc-700/50">Electro</button>
                     </div>
                 </div>
 
-                <!-- Sub-Bass (30Hz) -->
+                <!-- Sub-Bass (30Hz) - Can go negative (-20dB to +30dB) -->
                 <div class="bg-zinc-950/50 p-3 rounded-2xl border border-zinc-800/60">
                     <div class="flex justify-between mb-1.5">
-                        <span class="text-zinc-300 font-medium">Саб-бас (30 Гц - Глубокий кач)</span>
+                        <span class="text-zinc-300 font-medium">Саб-бас (30 Гц - Глубокий кач / Ослабление)</span>
                         <span id="subBassVal" class="text-emerald-400 font-mono">15 дБ</span>
                     </div>
-                    <input type="range" id="subBassSlider" min="0" max="30" step="1" value="15" oninput="updateEQBand('subBass', this.value)" class="w-full">
+                    <input type="range" id="subBassSlider" min="-20" max="30" step="1" value="15" oninput="updateEQBand('subBass', this.value)" class="w-full">
                 </div>
 
-                <!-- Mid-Bass (90Hz) -->
+                <!-- Mid-Bass (90Hz) - Can go negative -->
                 <div class="bg-zinc-950/50 p-3 rounded-2xl border border-zinc-800/60">
                     <div class="flex justify-between mb-1.5">
                         <span class="text-zinc-300 font-medium">Мид-бас (90 Гц - Плотный удар)</span>
                         <span id="midBassVal" class="text-emerald-400 font-mono">12 дБ</span>
                     </div>
-                    <input type="range" id="midBassSlider" min="0" max="30" step="1" value="12" oninput="updateEQBand('midBass', this.value)" class="w-full">
+                    <input type="range" id="midBassSlider" min="-20" max="30" step="1" value="12" oninput="updateEQBand('midBass', this.value)" class="w-full">
                 </div>
 
                 <!-- Mids (1 kHz) -->
@@ -400,6 +401,14 @@
         let midsFilter = null;
         let highsFilter = null;
 
+        // Load saved EQ settings from localStorage or use defaults
+        let savedEQ = {
+            subBass: parseFloat(localStorage.getItem('gitbeat_eq_sub') ?? '15'),
+            midBass: parseFloat(localStorage.getItem('gitbeat_eq_mid') ?? '12'),
+            mids: parseFloat(localStorage.getItem('gitbeat_eq_mids') ?? '0'),
+            highs: parseFloat(localStorage.getItem('gitbeat_eq_highs') ?? '4')
+        };
+
         let repoConfig = {
             owner: localStorage.getItem('gitbeat_owner') || 'ruvideo2',
             repo: localStorage.getItem('gitbeat_repo') || 'Musicg',
@@ -410,6 +419,17 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             updateConfigUI();
+            
+            // Set slider UI values from saved settings
+            document.getElementById('subBassSlider').value = savedEQ.subBass;
+            document.getElementById('subBassVal').textContent = savedEQ.subBass + ' дБ';
+            document.getElementById('midBassSlider').value = savedEQ.midBass;
+            document.getElementById('midBassVal').textContent = savedEQ.midBass + ' дБ';
+            document.getElementById('midsSlider').value = savedEQ.mids;
+            document.getElementById('midsVal').textContent = savedEQ.mids + ' дБ';
+            document.getElementById('highsSlider').value = savedEQ.highs;
+            document.getElementById('highsVal').textContent = savedEQ.highs + ' дБ';
+
             if (repoConfig.owner && repoConfig.repo) {
                 fetchGitHubMusic();
             } else {
@@ -453,27 +473,27 @@
                 subBassFilter = audioCtx.createBiquadFilter();
                 subBassFilter.type = 'lowshelf';
                 subBassFilter.frequency.value = 45;
-                subBassFilter.gain.value = 15;
+                subBassFilter.gain.value = savedEQ.subBass;
 
                 // Mid-Bass (90 Hz)
                 midBassFilter = audioCtx.createBiquadFilter();
                 midBassFilter.type = 'peaking';
                 midBassFilter.frequency.value = 95;
                 midBassFilter.Q.value = 1.2;
-                midBassFilter.gain.value = 12;
+                midBassFilter.gain.value = savedEQ.midBass;
 
                 // Mids (1 kHz)
                 midsFilter = audioCtx.createBiquadFilter();
                 midsFilter.type = 'peaking';
                 midsFilter.frequency.value = 1000;
                 midsFilter.Q.value = 1.0;
-                midsFilter.gain.value = 0;
+                midsFilter.gain.value = savedEQ.mids;
 
                 // Highs (12 kHz)
                 highsFilter = audioCtx.createBiquadFilter();
                 highsFilter.type = 'highshelf';
                 highsFilter.frequency.value = 10000;
-                highsFilter.gain.value = 4;
+                highsFilter.gain.value = savedEQ.highs;
 
                 // Connect chain: Source -> SubBass -> MidBass -> Mids -> Highs -> Destination
                 sourceNode.connect(subBassFilter);
@@ -644,6 +664,23 @@
 
             renderTrackList();
 
+            // Setup Media Session API for mobile background playback & lock screen controls
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.title,
+                    artist: track.artist,
+                    album: repoConfig.repo || 'GitBeat',
+                    artwork: [
+                        { src: 'https://raw.githubusercontent.com/ruvideo2/Musicg/main/icon.png', sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+
+                navigator.mediaSession.setActionHandler('play', () => { if (!isPlaying) togglePlayPause(); });
+                navigator.mediaSession.setActionHandler('pause', () => { if (isPlaying) togglePlayPause(); });
+                navigator.mediaSession.setActionHandler('previoustrack', () => { prevTrack(); });
+                navigator.mediaSession.setActionHandler('nexttrack', () => { nextTrack(); });
+            }
+
             if (playFlag) {
                 if (!audioCtx) initAudioContext();
                 else if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -777,6 +814,9 @@
             const gain = parseFloat(val);
             document.getElementById(band + 'Val').textContent = `${gain} дБ`;
             
+            savedEQ[band] = gain;
+            localStorage.setItem('gitbeat_eq_' + (band === 'subBass' ? 'sub' : band === 'midBass' ? 'mid' : band), gain);
+
             if (band === 'subBass' && subBassFilter) {
                 subBassFilter.gain.value = gain;
             } else if (band === 'midBass' && midBassFilter) {
@@ -793,6 +833,8 @@
                 setEQValues(25, 20, 2, 8);
             } else if (type === 'electronic') {
                 setEQValues(18, 15, 4, 10);
+            } else if (type === 'nobass') {
+                setEQValues(-20, -20, 0, 2);
             } else {
                 setEQValues(5, 5, 0, 2);
             }
