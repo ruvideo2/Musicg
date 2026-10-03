@@ -177,7 +177,7 @@
                     <span>Инструкция</span>
                 </h3>
                 <p class="text-xs text-zinc-400 leading-relaxed">
-                    Если треки не отображаются, проверьте доступность репозитория <b class="text-zinc-200">ruvideo2/Musicg</b> или воспользуйтесь демо-треками / загрузкой с ПК.
+                    Если треки останавливаются или не воспроизводятся, проверьте интернет-соединение или воспользуйтесь загрузкой с ПК.
                 </p>
             </div>
         </div>
@@ -365,7 +365,7 @@
         </div>
     </div>
 
-    <audio id="audioPlayer" crossorigin="anonymous"></audio>
+    <audio id="audioPlayer" crossorigin="anonymous" preload="auto"></audio>
 
     <script>
         const defaultTracks = [
@@ -439,11 +439,28 @@
 
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('ended', handleTrackEnded);
+            
+            audio.addEventListener('error', (e) => {
+                console.warn('Audio playback error encountered, trying next track...', e);
+                setTimeout(() => {
+                    if (tracks.length > 1) {
+                        nextTrack();
+                    }
+                }, 1500);
+            });
+
             audio.addEventListener('loadedmetadata', () => {
                 document.getElementById('totalDuration').textContent = formatTime(audio.duration || 0);
             });
             audio.addEventListener('play', () => { isPlaying = true; updatePlayPauseButton(); renderTrackList(); });
             audio.addEventListener('pause', () => { isPlaying = false; updatePlayPauseButton(); renderTrackList(); });
+
+            // Resume AudioContext on visibility change (mobile tab switches / screen lock prevention)
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume().catch(err => console.error("AudioCtx resume error:", err));
+                }
+            });
 
             const pBar = document.getElementById('progressBar');
             if (pBar) {
@@ -463,7 +480,12 @@
         });
 
         function initAudioContext() {
-            if (audioCtx) return;
+            if (audioCtx) {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                return;
+            }
             try {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContextClass();
@@ -659,6 +681,7 @@
             const track = tracks[currentIndex];
 
             audio.src = track.download_url;
+            audio.load();
             document.getElementById('currentTitle').textContent = track.title;
             document.getElementById('currentArtist').textContent = track.artist;
 
@@ -682,8 +705,10 @@
             }
 
             if (playFlag) {
-                if (!audioCtx) initAudioContext();
-                else if (audioCtx.state === 'suspended') audioCtx.resume();
+                initAudioContext();
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
 
                 audio.play().then(() => {
                     isPlaying = true;
@@ -703,13 +728,15 @@
                 return;
             }
 
-            if (!audioCtx) initAudioContext();
-            else if (audioCtx.state === 'suspended') audioCtx.resume();
+            initAudioContext();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
 
             if (isPlaying) {
                 audio.pause();
             } else {
-                audio.play().catch(e => console.error(e));
+                audio.play().catch(e => console.error("Play error:", e));
             }
         }
 
@@ -801,7 +828,7 @@
         }
 
         function openAudioSettings() {
-            if (!audioCtx) initAudioContext();
+            initAudioContext();
             document.getElementById('audioSettingsModal').classList.remove('hidden');
         }
 
@@ -810,7 +837,7 @@
         }
 
         function updateEQBand(band, val) {
-            if (!audioCtx) initAudioContext();
+            initAudioContext();
             const gain = parseFloat(val);
             document.getElementById(band + 'Val').textContent = `${gain} дБ`;
             
