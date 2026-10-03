@@ -40,7 +40,6 @@
             overflow-x: hidden;
             transition: background 0.3s ease;
         }
-        /* Smooth general transitions */
         *, ::before, ::after {
             transition-property: background-color, border-color, color, fill, stroke, opacity, transform, box-shadow;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -89,7 +88,6 @@
             background: #34d399;
         }
 
-        /* Smooth fade-in animation for lists and modals */
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.96) translateY(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
@@ -163,7 +161,7 @@
                     <span>Загрузка с ПК</span>
                 </h3>
                 <p class="text-[11px] text-zinc-400 leading-relaxed">
-                    Если GitHub API выдает ошибку или лимит, вы можете загрузить свои аудиофайлы прямо с компьютера:
+                    Загружайте локальные аудиофайлы с компьютера или устройства:
                 </p>
                 <label class="block w-full text-center bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all">
                     <i class="fa-solid fa-upload mr-1.5"></i> Выбрать MP3 файлы
@@ -177,7 +175,7 @@
                     <span>Инструкция</span>
                 </h3>
                 <p class="text-xs text-zinc-400 leading-relaxed">
-                    Если треки останавливаются в фоне, убедитесь, что приложению разрешена фоновая активность в настройках телефона.
+                    Загрузка музыки происходит прямо из выбранного GitHub репозитория. При изменении ветки или репозитория нажмите "Синхронизировать".
                 </p>
             </div>
         </div>
@@ -264,6 +262,7 @@
         </div>
     </footer>
 
+    <!-- GitHub Settings Modal -->
     <div id="configModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-modal">
             <div class="flex items-center justify-between mb-4">
@@ -296,7 +295,7 @@
         </div>
     </div>
 
-    <!-- Advanced Multi-Band Bass & EQ Modal -->
+    <!-- Advanced EQ Modal -->
     <div id="audioSettingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative animate-modal">
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
@@ -310,7 +309,6 @@
             </div>
             
             <div class="space-y-4 text-xs max-h-[65vh] overflow-y-auto pr-1">
-                <!-- Preset buttons -->
                 <div>
                     <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-2">Пресеты звучания</label>
                     <div class="grid grid-cols-4 gap-2">
@@ -321,37 +319,33 @@
                     </div>
                 </div>
 
-                <!-- Sub-Bass (30Hz) - Can go negative (-20dB to +30dB) -->
                 <div class="bg-zinc-950/50 p-3 rounded-2xl border border-zinc-800/60">
                     <div class="flex justify-between mb-1.5">
-                        <span class="text-zinc-300 font-medium">Саб-бас (30 Гц - Глубокий кач / Ослабление)</span>
+                        <span class="text-zinc-300 font-medium">Саб-бас (30 Гц)</span>
                         <span id="subBassVal" class="text-emerald-400 font-mono">15 дБ</span>
                     </div>
                     <input type="range" id="subBassSlider" min="-20" max="30" step="1" value="15" oninput="updateEQBand('subBass', this.value)" class="w-full">
                 </div>
 
-                <!-- Mid-Bass (90Hz) - Can go negative -->
                 <div class="bg-zinc-950/50 p-3 rounded-2xl border border-zinc-800/60">
                     <div class="flex justify-between mb-1.5">
-                        <span class="text-zinc-300 font-medium">Мид-бас (90 Гц - Плотный удар)</span>
+                        <span class="text-zinc-300 font-medium">Мид-бас (90 Гц)</span>
                         <span id="midBassVal" class="text-emerald-400 font-mono">12 дБ</span>
                     </div>
                     <input type="range" id="midBassSlider" min="-20" max="30" step="1" value="12" oninput="updateEQBand('midBass', this.value)" class="w-full">
                 </div>
 
-                <!-- Mids (1 kHz) -->
                 <div class="bg-zinc-950/50 p-3 rounded-2xl border border-zinc-800/60">
                     <div class="flex justify-between mb-1.5">
-                        <span class="text-zinc-300 font-medium">Средние частоты (Вокал и гитары)</span>
+                        <span class="text-zinc-300 font-medium">Средние частоты (1 кГц)</span>
                         <span id="midsVal" class="text-emerald-400 font-mono">0 дБ</span>
                     </div>
                     <input type="range" id="midsSlider" min="-15" max="15" step="1" value="0" oninput="updateEQBand('mids', this.value)" class="w-full">
                 </div>
 
-                <!-- Highs (12 kHz) -->
                 <div class="bg-zinc-950/50 p-3 rounded-2xl border border-zinc-800/60">
                     <div class="flex justify-between mb-1.5">
-                        <span class="text-zinc-300 font-medium">Высокие частоты (Тарелки, воздух)</span>
+                        <span class="text-zinc-300 font-medium">Высокие частоты (12 кГц)</span>
                         <span id="highsVal" class="text-emerald-400 font-mono">4 дБ</span>
                     </div>
                     <input type="range" id="highsSlider" min="-15" max="20" step="1" value="4" oninput="updateEQBand('highs', this.value)" class="w-full">
@@ -386,7 +380,8 @@
         ];
 
         let tracks = [];
-        let currentIndex = 0;
+        let filteredTracks = [];
+        let currentIndex = -1;
         let isPlaying = false;
         let isShuffle = false;
         let isRepeat = false;
@@ -429,18 +424,13 @@
             document.getElementById('highsSlider').value = savedEQ.highs;
             document.getElementById('highsVal').textContent = savedEQ.highs + ' дБ';
 
-            if (repoConfig.owner && repoConfig.repo) {
-                fetchGitHubMusic();
-            } else {
-                tracks = [...defaultTracks];
-                renderTrackList();
-            }
+            fetchGitHubMusic();
 
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('ended', handleTrackEnded);
             
             audio.addEventListener('error', (e) => {
-                console.warn('Audio playback error encountered, trying next track...', e);
+                console.warn('Playback error, loading next track...', e);
                 setTimeout(() => {
                     if (tracks.length > 1) {
                         nextTrack();
@@ -464,20 +454,17 @@
                 releaseWakeLock();
             });
 
-            // Enhanced Background Playback & AudioContext Recovery for Mobile
             document.addEventListener('visibilitychange', async () => {
                 if (document.hidden) {
-                    // Page is in background - ensure audioCtx and audio are kept alive
                     if (audioCtx && audioCtx.state === 'suspended') {
                         try { await audioCtx.resume(); } catch (e) {}
                     }
                 } else {
-                    // Page returned to foreground
                     if (audioCtx && audioCtx.state === 'suspended') {
-                        try { await audioCtx.resume(); } catch (err) { console.error("AudioCtx resume error:", err); }
+                        try { await audioCtx.resume(); } catch (err) {}
                     }
                     if (isPlaying && audio.paused) {
-                        try { await audio.play(); } catch (e) { console.log("Background resume play error:", e); }
+                        try { await audio.play(); } catch (e) {}
                     }
                     requestWakeLock();
                 }
@@ -504,25 +491,19 @@
             if ('wakeLock' in navigator && !wakeLock) {
                 try {
                     wakeLock = await navigator.wakeLock.request('screen');
-                } catch (err) {
-                    console.log('Wake Lock request failed:', err);
-                }
+                } catch (err) {}
             }
         }
 
         function releaseWakeLock() {
             if (wakeLock) {
-                wakeLock.release().then(() => {
-                    wakeLock = null;
-                }).catch(err => console.log('Wake Lock release failed:', err));
+                wakeLock.release().then(() => { wakeLock = null; }).catch(() => {});
             }
         }
 
         function initAudioContext() {
             if (audioCtx) {
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 return;
             }
             try {
@@ -570,129 +551,110 @@
 
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('Ошибка API GitHub (возможно лимит запросов или неверный репозиторий)');
+                if (!response.ok) throw new Error('API Rate Limit or invalid repo');
                 const data = await response.json();
                 
                 const audioExtensions = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
                 const fetchedTracks = data
                     .filter(item => item.type === 'file' && audioExtensions.some(ext => item.name.toLowerCase().endsWith(ext)))
                     .map(item => {
-                        const rawUrl = `https://raw.githubusercontent.com/${repoConfig.owner}/${repoConfig.repo}/${repoConfig.branch}/${item.path}`;
-                        let cleanName = item.name.substring(0, item.name.lastIndexOf('.'));
-                        let artist = repoConfig.owner;
-                        let title = cleanName;
-
-                        if (cleanName.includes('-')) {
-                            const parts = cleanName.split('-');
-                            artist = parts[0].trim();
-                            title = parts.slice(1).join('-').trim();
-                        }
-
+                        const rawUrl = `https://raw.githubusercontent.com/${repoConfig.owner}/${repoConfig.repo}/${repoConfig.branch}/${encodeURIComponent(item.name)}`;
+                        const cleanName = item.name.substring(0, item.name.lastIndexOf('.')) || item.name;
+                        const parts = cleanName.split(' - ');
+                        
                         return {
                             name: item.name,
-                            title: title,
-                            artist: artist,
-                            download_url: rawUrl,
-                            source: repoConfig.repo
+                            title: parts.length > 1 ? parts[1] : cleanName,
+                            artist: parts.length > 1 ? parts[0] : repoConfig.owner,
+                            download_url: item.download_url || rawUrl,
+                            source: 'GitHub'
                         };
                     });
 
                 if (fetchedTracks.length > 0) {
                     tracks = fetchedTracks;
                 } else {
-                    // Если репозиторий пуст или нет аудиофайлов, используем демо-треки, чтобы список не был пустым
-                    console.warn("В репозитории не найдено аудиофайлов. Загружены демо-треки.");
                     tracks = [...defaultTracks];
                 }
-                renderTrackList();
             } catch (error) {
-                console.error('GitHub fetch error:', error);
-                // При ошибке API подгружаем демо-треки, чтобы интерфейс не пустовал
+                console.warn('Fallback to direct raw URL format due to error:', error);
                 tracks = [...defaultTracks];
-                renderTrackList();
             } finally {
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
+                filterTracks();
             }
         }
 
+        function parseFilename(filename) {
+            const cleanName = filename.substring(0, filename.lastIndexOf('.')) || filename;
+            const parts = cleanName.split(' - ');
+            if (parts.length > 1) {
+                return { artist: parts[0].trim(), title: parts.slice(1).join(' - ').trim() };
+            }
+            return { artist: "Unknown Artist", title: cleanName.trim() };
+        }
+
         function handleLocalFiles(event) {
-            const files = event.target.files;
-            if (!files || files.length === 0) return;
+            const files = Array.from(event.target.files);
+            if (!files.length) return;
 
-            const newLocalTracks = Array.from(files).map(file => {
-                let cleanName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                let artist = "Локальный файл";
-                let title = cleanName;
-
-                if (cleanName.includes('-')) {
-                    const parts = cleanName.split('-');
-                    artist = parts[0].trim();
-                    title = parts.slice(1).join('-').trim();
-                }
-
+            const localTracks = files.map(file => {
+                const parsed = parseFilename(file.name);
                 return {
                     name: file.name,
-                    title: title,
-                    artist: artist,
+                    title: parsed.title,
+                    artist: parsed.artist,
                     download_url: URL.createObjectURL(file),
-                    source: "ПК"
+                    source: 'Локальный'
                 };
             });
 
-            tracks = [...newLocalTracks, ...tracks];
-            renderTrackList();
+            tracks = [...localTracks, ...tracks];
+            filterTracks();
+            playTrack(0);
         }
 
         function filterTracks() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = tracks.filter(t => 
-                t.title.toLowerCase().includes(query) || t.artist.toLowerCase().includes(query)
+            filteredTracks = tracks.filter(t => 
+                t.title.toLowerCase().includes(query) || 
+                t.artist.toLowerCase().includes(query) ||
+                t.name.toLowerCase().includes(query)
             );
-            renderTrackList(filtered);
+            renderTrackList();
         }
 
-        function renderTrackList(customList = null) {
-            const listToRender = customList || tracks;
-            const container = document.getElementById('trackList');
-            document.getElementById('trackCount').textContent = `${listToRender.length} треков`;
+        function renderTrackList() {
+            const listContainer = document.getElementById('trackList');
+            document.getElementById('trackCount').textContent = `${filteredTracks.length} треков`;
 
-            if (!container) return;
-
-            if (listToRender.length === 0) {
-                container.innerHTML = `
-                    <div class="py-16 text-center text-zinc-400 text-xs flex flex-col items-center justify-center space-y-3">
-                        <i class="fa-solid fa-music text-3xl text-zinc-600"></i>
-                        <p class="font-semibold text-zinc-300">Треки отсутствуют</p>
-                    </div>
-                `;
+            if (filteredTracks.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="p-8 text-center text-zinc-500 text-xs">
+                        <i class="fa-solid fa-music text-2xl mb-2 opacity-50 block"></i>
+                        Музыкальные файлы не найдены
+                    </div>`;
                 return;
             }
 
-            container.innerHTML = listToRender.map((track, idx) => {
-                const isCurrent = tracks[currentIndex] && tracks[currentIndex].download_url === track.download_url;
-
+            listContainer.innerHTML = filteredTracks.map((track, idx) => {
+                const originalIndex = tracks.indexOf(track);
+                const isCurrent = originalIndex === currentIndex;
+                
                 return `
-                    <div onclick="selectAndPlayTrack('${track.download_url}')" class="grid grid-cols-12 items-center px-4 py-3 hover:bg-zinc-800/40 cursor-pointer transition-all duration-200 group ${isCurrent ? 'bg-emerald-950/20 border-l-2 border-emerald-500 shadow-inner' : ''}">
-                        <div class="col-span-1 text-center text-xs text-zinc-500 group-hover:text-zinc-300">
-                            ${isCurrent && isPlaying ? '<i class="fa-solid fa-volume-high text-emerald-400 animate-pulse"></i>' : idx + 1}
+                    <div class="grid grid-cols-12 px-4 py-3 items-center hover:bg-zinc-800/50 ${isCurrent ? 'bg-emerald-500/10 border-l-2 border-emerald-500' : ''} text-xs transition-colors cursor-pointer group" onclick="playTrack(${originalIndex})">
+                        <div class="col-span-1 text-center font-mono ${isCurrent ? 'text-emerald-400 font-bold' : 'text-zinc-500'}">
+                            ${isCurrent && isPlaying ? '<i class="fa-solid fa-waveform animate-pulse text-emerald-400"></i>' : (idx + 1)}
                         </div>
-                        <div class="col-span-7 sm:col-span-6 flex items-center space-x-3 min-w-0 pr-2">
-                            <div class="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0 overflow-hidden transition-transform group-hover:scale-105">
-                                <img src="https://raw.githubusercontent.com/ruvideo2/Musicg/main/icon.png" alt="Cover" class="w-full h-full object-cover" onerror="this.style.display='none';">
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-xs font-medium truncate ${isCurrent ? 'text-emerald-400 font-semibold' : 'text-zinc-200 group-hover:text-white'}">${escapeHtml(track.title)}</p>
-                                <p class="text-[11px] text-zinc-400 truncate">${escapeHtml(track.artist)}</p>
-                            </div>
+                        <div class="col-span-7 sm:col-span-6 min-w-0 pr-2">
+                            <div class="font-semibold truncate ${isCurrent ? 'text-emerald-400' : 'text-zinc-200'}">${escapeHtml(track.title)}</div>
+                            <div class="text-[11px] text-zinc-400 truncate">${escapeHtml(track.artist)}</div>
                         </div>
-                        <div class="col-span-3 hidden sm:block text-xs text-zinc-500 truncate">
-                            <span class="bg-zinc-800/80 px-2 py-0.5 rounded text-[10px] text-zinc-400">${track.source}</span>
+                        <div class="col-span-3 hidden sm:block text-zinc-500 text-[11px]">
+                            <span class="bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full border border-zinc-700/50">${escapeHtml(track.source)}</span>
                         </div>
-                        <div class="col-span-4 sm:col-span-2 text-right flex items-center justify-end space-x-2">
-                            <a href="${track.download_url}" target="_blank" onclick="event.stopPropagation()" class="text-zinc-500 hover:text-zinc-200 p-1.5 rounded-lg hover:bg-zinc-800 transition-colors" title="Скачать">
-                                <i class="fa-solid fa-download text-xs"></i>
-                            </a>
-                            <button onclick="event.stopPropagation(); selectAndPlayTrack('${track.download_url}')" class="w-8 h-8 rounded-full bg-zinc-800 group-hover:bg-emerald-600 text-zinc-300 group-hover:text-white flex items-center justify-center transition-all shadow-sm">
+                        <div class="col-span-4 sm:col-span-2 text-right pr-2">
+                            <button onclick="event.stopPropagation(); playTrack(${originalIndex});" class="w-8 h-8 rounded-full bg-zinc-800 group-hover:bg-emerald-600 text-zinc-300 group-hover:text-white inline-flex items-center justify-center transition-all">
                                 <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play'} text-[10px]"></i>
                             </button>
                         </div>
@@ -701,102 +663,66 @@
             }).join('');
         }
 
-        function selectAndPlayTrack(url) {
-            const index = tracks.findIndex(t => t.download_url === url);
-            if (index !== -1) {
-                if (currentIndex === index && audio.src) {
-                    togglePlayPause();
-                    return;
-                }
-                loadTrack(index, true);
-            }
-        }
-
-        function loadTrack(index, playFlag = true) {
-            if (tracks.length === 0) return;
+        function playTrack(index) {
+            if (index < 0 || index >= tracks.length) return;
+            initAudioContext();
+            
             currentIndex = index;
             const track = tracks[currentIndex];
 
-            audio.src = track.download_url;
-            audio.load();
             document.getElementById('currentTitle').textContent = track.title;
             document.getElementById('currentArtist').textContent = track.artist;
 
-            renderTrackList();
-
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: track.title,
-                    artist: track.artist,
-                    album: repoConfig.repo || 'GitBeat',
-                    artwork: [
-                        { src: 'https://raw.githubusercontent.com/ruvideo2/Musicg/main/icon.png', sizes: '512x512', type: 'image/png' }
-                    ]
-                });
-
-                navigator.mediaSession.setActionHandler('play', () => { if (!isPlaying) togglePlayPause(); });
-                navigator.mediaSession.setActionHandler('pause', () => { if (isPlaying) togglePlayPause(); });
-                navigator.mediaSession.setActionHandler('previoustrack', () => { prevTrack(); });
-                navigator.mediaSession.setActionHandler('nexttrack', () => { nextTrack(); });
-            }
-
-            if (playFlag) {
-                initAudioContext();
-                if (audioCtx && audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-
-                audio.play().then(() => {
-                    isPlaying = true;
-                    updatePlayPauseButton();
-                }).catch(e => {
-                    console.error('Play error:', e);
-                    isPlaying = false;
-                    updatePlayPauseButton();
-                });
-            }
+            audio.src = track.download_url;
+            audio.play().then(() => {
+                isPlaying = true;
+                updatePlayPauseButton();
+                renderTrackList();
+                updateMediaSession(track);
+            }).catch(e => {
+                console.error("Play error:", e);
+            });
         }
 
         function togglePlayPause() {
-            if (tracks.length === 0) return;
-            if (!audio.src && tracks.length > 0) {
-                loadTrack(0, true);
+            if (currentIndex === -1 && tracks.length > 0) {
+                playTrack(0);
                 return;
             }
+            if (!audio.src) return;
 
             initAudioContext();
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
             if (isPlaying) {
                 audio.pause();
             } else {
-                audio.play().catch(e => console.error("Play error:", e));
+                audio.play();
             }
         }
 
         function updatePlayPauseButton() {
             const icon = document.getElementById('playPauseIcon');
-            if (icon) {
-                icon.className = isPlaying ? "fa-solid fa-pause text-xs" : "fa-solid fa-play text-xs ml-0.5";
+            if (isPlaying) {
+                icon.className = 'fa-solid fa-pause text-xs';
+            } else {
+                icon.className = 'fa-solid fa-play text-xs ml-0.5';
+            }
+        }
+
+        function nextTrack() {
+            if (!tracks.length) return;
+            if (isShuffle) {
+                let nextIdx = Math.floor(Math.random() * tracks.length);
+                playTrack(nextIdx);
+            } else {
+                let nextIdx = (currentIndex + 1) % tracks.length;
+                playTrack(nextIdx);
             }
         }
 
         function prevTrack() {
-            if (tracks.length === 0) return;
-            currentIndex = (currentIndex - 1 + tracks.length) % tracks.length;
-            loadTrack(currentIndex, true);
-        }
-
-        function nextTrack() {
-            if (tracks.length === 0) return;
-            if (isShuffle) {
-                currentIndex = Math.floor(Math.random() * tracks.length);
-            } else {
-                currentIndex = (currentIndex + 1) % tracks.length;
-            }
-            loadTrack(currentIndex, true);
+            if (!tracks.length) return;
+            let prevIdx = (currentIndex - 1 + tracks.length) % tracks.length;
+            playTrack(prevIdx);
         }
 
         function handleTrackEnded() {
@@ -808,121 +734,99 @@
             }
         }
 
+        function playAll() {
+            if (tracks.length > 0) playTrack(0);
+        }
+
         function toggleShuffle() {
             isShuffle = !isShuffle;
-            const btn = document.getElementById('shuffleBtn');
-            if (isShuffle) btn.classList.add('text-emerald-400');
-            else btn.classList.remove('text-emerald-400');
+            document.getElementById('shuffleBtn').classList.toggle('text-emerald-400', isShuffle);
         }
 
         function toggleRepeat() {
             isRepeat = !isRepeat;
-            const btn = document.getElementById('repeatBtn');
-            if (isRepeat) btn.classList.add('text-emerald-400');
-            else btn.classList.remove('text-emerald-400');
-        }
-
-        function updateProgress() {
-            if (isSeeking) return;
-            const current = audio.currentTime || 0;
-            const duration = audio.duration || 0;
-            
-            document.getElementById('currentTime').textContent = formatTime(current);
-            if (duration > 0) {
-                document.getElementById('totalDuration').textContent = formatTime(duration);
-                document.getElementById('progressBar').value = (current / duration) * 100;
-            }
+            document.getElementById('repeatBtn').classList.toggle('text-emerald-400', isRepeat);
         }
 
         function setVolume(val) {
             audio.volume = val / 100;
-            isMuted = (audio.volume === 0);
+            if (val > 0) isMuted = false;
+            updateMuteButton();
         }
 
         function toggleMute() {
-            if (!isMuted) {
+            isMuted = !isMuted;
+            if (isMuted) {
                 previousVolume = audio.volume;
                 audio.volume = 0;
                 document.getElementById('volumeBar').value = 0;
-                isMuted = true;
             } else {
                 audio.volume = previousVolume || 0.8;
                 document.getElementById('volumeBar').value = audio.volume * 100;
-                isMuted = false;
+            }
+            updateMuteButton();
+        }
+
+        function updateMuteButton() {
+            const muteBtn = document.getElementById('muteBtn');
+            if (isMuted || audio.volume === 0) {
+                muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark text-rose-400"></i>';
+            } else {
+                muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
             }
         }
 
-        function playAll() {
-            if (tracks.length > 0) loadTrack(0, true);
+        function updateProgress() {
+            if (isSeeking || !audio.duration) return;
+            const progress = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progressBar').value = progress || 0;
+            document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
         }
 
-        function formatTime(seconds) {
-            if (isNaN(seconds) || seconds < 0) return "0:00";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        function openAudioSettings() {
-            initAudioContext();
-            document.getElementById('audioSettingsModal').classList.remove('hidden');
-        }
-
-        function closeAudioSettings() {
-            document.getElementById('audioSettingsModal').classList.add('hidden');
+        function formatTime(secs) {
+            if (isNaN(secs)) return "0:00";
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
         function updateEQBand(band, val) {
-            initAudioContext();
-            const gain = parseFloat(val);
-            document.getElementById(band + 'Val').textContent = `${gain} дБ`;
-            
-            savedEQ[band] = gain;
-            localStorage.setItem('gitbeat_eq_' + (band === 'subBass' ? 'sub' : band === 'midBass' ? 'mid' : band), gain);
+            const num = parseFloat(val);
+            savedEQ[band] = num;
+            document.getElementById(`${band}Val`).textContent = num + ' дБ';
+            localStorage.setItem(`gitbeat_eq_${band}`, num);
 
-            if (band === 'subBass' && subBassFilter) {
-                subBassFilter.gain.value = gain;
-            } else if (band === 'midBass' && midBassFilter) {
-                midBassFilter.gain.value = gain;
-            } else if (band === 'mids' && midsFilter) {
-                midsFilter.gain.value = gain;
-            } else if (band === 'highs' && highsFilter) {
-                highsFilter.gain.value = gain;
-            }
+            if (!audioCtx) return;
+            if (band === 'subBass' && subBassFilter) subBassFilter.gain.value = num;
+            if (band === 'midBass' && midBassFilter) midBassFilter.gain.value = num;
+            if (band === 'mids' && midsFilter) midsFilter.gain.value = num;
+            if (band === 'highs' && highsFilter) highsFilter.gain.value = num;
         }
 
         function applyPreset(type) {
-            if (type === 'hardbass') {
-                setEQValues(25, 20, 2, 8);
-            } else if (type === 'electronic') {
-                setEQValues(18, 15, 4, 10);
-            } else if (type === 'nobass') {
-                setEQValues(-20, -20, 0, 2);
-            } else {
-                setEQValues(5, 5, 0, 2);
-            }
-        }
+            const presets = {
+                normal: { subBass: 0, midBass: 0, mids: 0, highs: 0 },
+                nobass: { subBass: -18, midBass: -12, mids: 2, highs: 4 },
+                hardbass: { subBass: 25, midBass: 18, mids: -2, highs: 6 },
+                electronic: { subBass: 18, midBass: 12, mids: 1, highs: 10 }
+            };
+            const p = presets[type];
+            if (!p) return;
 
-        function setEQValues(sub, mid, md, high) {
-            document.getElementById('subBassSlider').value = sub;
-            document.getElementById('midBassSlider').value = mid;
-            document.getElementById('midsSlider').value = md;
-            document.getElementById('highsSlider').value = high;
-
-            updateEQBand('subBass', sub);
-            updateEQBand('midBass', mid);
-            updateEQBand('mids', md);
-            updateEQBand('highs', high);
+            Object.keys(p).forEach(k => {
+                document.getElementById(`${k}Slider`).value = p[k];
+                updateEQBand(k, p[k]);
+            });
         }
 
         function resetEQ() {
-            setEQValues(15, 12, 0, 4);
+            applyPreset('normal');
         }
 
         function openConfigModal() {
             document.getElementById('inputOwner').value = repoConfig.owner;
             document.getElementById('inputRepo').value = repoConfig.repo;
-            document.getElementById('inputBranch').value = repoConfig.branch || 'main';
+            document.getElementById('inputBranch').value = repoConfig.branch;
             document.getElementById('configModal').classList.remove('hidden');
         }
 
@@ -930,28 +834,54 @@
             document.getElementById('configModal').classList.add('hidden');
         }
 
-        async function saveConfig() {
-            repoConfig.owner = document.getElementById('inputOwner'].value.trim();
-            repoConfig.repo = document.getElementById('inputRepo').value.trim();
+        function saveConfig() {
+            repoConfig.owner = document.getElementById('inputOwner').value.trim() || 'ruvideo2';
+            repoConfig.repo = document.getElementById('inputRepo').value.trim() || 'Musicg';
             repoConfig.branch = document.getElementById('inputBranch').value.trim() || 'main';
 
             localStorage.setItem('gitbeat_owner', repoConfig.owner);
             localStorage.setItem('gitbeat_repo', repoConfig.repo);
             localStorage.setItem('gitbeat_branch', repoConfig.branch);
 
-            closeConfigModal();
             updateConfigUI();
-            await fetchGitHubMusic();
+            closeConfigModal();
+            fetchGitHubMusic();
         }
 
         function updateConfigUI() {
-            document.getElementById('lblOwner').textContent = repoConfig.owner || 'GitHub';
-            document.getElementById('lblRepo').textContent = repoConfig.repo || 'Playlist';
-            document.getElementById('lblBranch').textContent = repoConfig.branch || 'main';
+            document.getElementById('lblOwner').textContent = repoConfig.owner;
+            document.getElementById('lblRepo').textContent = repoConfig.repo;
+            document.getElementById('lblBranch').textContent = repoConfig.branch;
+        }
+
+        function openAudioSettings() {
+            document.getElementById('audioSettingsModal').classList.remove('hidden');
+        }
+
+        function closeAudioSettings() {
+            document.getElementById('audioSettingsModal').classList.add('hidden');
+        }
+
+        function updateMediaSession(track) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.title,
+                    artist: track.artist,
+                    album: 'GitBeat Player',
+                    artwork: [
+                        { src: 'https://raw.githubusercontent.com/ruvideo2/Musicg/main/icon.png', sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+
+                navigator.mediaSession.setActionHandler('play', togglePlayPause);
+                navigator.mediaSession.setActionHandler('pause', togglePlayPause);
+                navigator.mediaSession.setActionHandler('previoustrack', prevTrack);
+                navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
+            }
         }
 
         function escapeHtml(str) {
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
     </script>
 </body>
