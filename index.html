@@ -189,12 +189,12 @@
 
     </main>
 
-    <footer class="fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/95 border-t border-zinc-800/80 backdrop-blur-xl px-4 py-3">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <footer class="fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/95 border-t border-zinc-800/80 backdrop-blur-xl px-4 py-3 shadow-2xl">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 items-center gap-4">
             
             <!-- Current Track Info -->
-            <div class="flex items-center space-x-3 w-full md:w-1/4">
-                <div id="currentCover" class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-zinc-800 flex items-center justify-center shrink-0 shadow-md overflow-hidden relative group">
+            <div class="flex items-center space-x-3 min-w-0">
+                <div id="currentCover" class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-zinc-800 flex items-center justify-center shrink-0 shadow-md overflow-hidden relative">
                     <i class="fa-solid fa-music text-zinc-300 text-base" id="currentCoverIcon"></i>
                 </div>
                 <div class="min-w-0 flex-1">
@@ -204,15 +204,15 @@
             </div>
 
             <!-- Playback Controls & Progress Bar -->
-            <div class="flex flex-col items-center w-full md:w-2/4 space-y-1.5">
-                <div class="flex items-center space-x-5">
+            <div class="flex flex-col items-center space-y-1.5 w-full">
+                <div class="flex items-center space-x-6">
                     <button onclick="toggleShuffle()" id="shuffleBtn" class="text-zinc-400 hover:text-zinc-100 text-xs transition-colors" title="Перемешать">
                         <i class="fa-solid fa-shuffle"></i>
                     </button>
                     <button onclick="prevTrack()" class="text-zinc-300 hover:text-white text-sm transition-colors" title="Предыдущий">
                         <i class="fa-solid fa-backward-step"></i>
                     </button>
-                    <button onclick="togglePlayPause()" id="playPauseBtn" class="w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 transition-transform active:scale-95" title="Пауза / Воспроизведение">
+                    <button onclick="togglePlayPause()" id="playPauseBtn" class="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 transition-transform active:scale-95" title="Пауза / Воспроизведение">
                         <i class="fa-solid fa-play text-xs ml-0.5" id="playPauseIcon"></i>
                     </button>
                     <button onclick="nextTrack()" class="text-zinc-300 hover:text-white text-sm transition-colors" title="Следующий">
@@ -224,19 +224,19 @@
                 </div>
 
                 <!-- Scrub Bar -->
-                <div class="w-full flex items-center space-x-2 text-[11px] text-zinc-400">
-                    <span id="currentTime">0:00</span>
-                    <input type="range" id="progressBar" value="0" min="0" max="100" step="0.1" oninput="seekTrack(this.value)" class="flex-1">
-                    <span id="totalDuration">0:00</span>
+                <div class="w-full flex items-center space-x-3 text-[11px] text-zinc-400">
+                    <span id="currentTime" class="w-8 text-right font-mono">0:00</span>
+                    <input type="range" id="progressBar" value="0" min="0" max="100" step="0.1" oninput="seekTrack(this.value)" class="flex-1 cursor-pointer">
+                    <span id="totalDuration" class="w-8 font-mono">0:00</span>
                 </div>
             </div>
 
             <!-- Volume & Extra Controls -->
-            <div class="hidden md:flex items-center justify-end space-x-3 w-1/4">
-                <button onclick="toggleMute()" id="muteBtn" class="text-zinc-400 hover:text-zinc-200 text-xs">
+            <div class="hidden md:flex items-center justify-end space-x-3">
+                <button onclick="toggleMute()" id="muteBtn" class="text-zinc-400 hover:text-zinc-200 text-xs p-1">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
-                <input type="range" id="volumeBar" value="80" min="0" max="100" oninput="setVolume(this.value)" class="w-24">
+                <input type="range" id="volumeBar" value="80" min="0" max="100" oninput="setVolume(this.value)" class="w-28 cursor-pointer">
             </div>
 
         </div>
@@ -410,6 +410,7 @@
         let isRepeat = false;
         let isMuted = false;
         let previousVolume = 0.8;
+        let isSeeking = false;
 
         // Web Audio API DSP Nodes
         let audioCtx = null;
@@ -470,7 +471,18 @@
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('ended', handleTrackEnded);
             audio.addEventListener('loadedmetadata', () => {
-                document.getElementById('totalDuration').textContent = formatTime(audio.duration);
+                const dur = audio.duration || 0;
+                document.getElementById('totalDuration').textContent = formatTime(dur);
+            });
+            audio.addEventListener('play', () => {
+                isPlaying = true;
+                updatePlayPauseButton();
+                renderTrackList();
+            });
+            audio.addEventListener('pause', () => {
+                isPlaying = false;
+                updatePlayPauseButton();
+                renderTrackList();
             });
         });
 
@@ -483,39 +495,33 @@
 
                 sourceNode = audioCtx.createMediaElementSource(audio);
 
-                // 1. Sub-Bass Filter (LowShelf for massive sub rumble)
                 subBassFilterNode = audioCtx.createBiquadFilter();
                 subBassFilterNode.type = 'lowshelf';
                 subBassFilterNode.frequency.value = 60;
                 subBassFilterNode.gain.value = 15;
 
-                // 2. Bass Boost Filter (Peaking for punchy kick & bass)
                 bassFilterNode = audioCtx.createBiquadFilter();
                 bassFilterNode.type = 'peaking';
                 bassFilterNode.frequency.value = 110;
                 bassFilterNode.Q.value = 1.2;
                 bassFilterNode.gain.value = 12;
 
-                // 3. EQ Low (Shelf at 200 Hz)
                 eqLowNode = audioCtx.createBiquadFilter();
                 eqLowNode.type = 'lowshelf';
                 eqLowNode.frequency.value = 200;
                 eqLowNode.gain.value = 6;
 
-                // 4. EQ Mid (Peaking at 1500 Hz)
                 eqMidNode = audioCtx.createBiquadFilter();
                 eqMidNode.type = 'peaking';
                 eqMidNode.frequency.value = 1500;
                 eqMidNode.Q.value = 1.0;
                 eqMidNode.gain.value = 0;
 
-                // 5. EQ High (HighShelf at 4000 Hz)
                 eqHighNode = audioCtx.createBiquadFilter();
                 eqHighNode.type = 'highshelf';
                 eqHighNode.frequency.value = 4000;
                 eqHighNode.gain.value = 4;
 
-                // 6. Dynamics Compressor (Prevents clipping & distortion when bass is insane)
                 compressorNode = audioCtx.createDynamicsCompressor();
                 compressorNode.threshold.value = -18;
                 compressorNode.knee.value = 12;
@@ -523,7 +529,6 @@
                 compressorNode.attack.value = 0.003;
                 compressorNode.release.value = 0.25;
 
-                // Connect chain: Source -> SubBass -> Bass -> EQ Low -> EQ Mid -> EQ High -> Compressor -> Destination
                 sourceNode
                     .connect(subBassFilterNode)
                     .connect(bassFilterNode)
@@ -532,8 +537,6 @@
                     .connect(eqHighNode)
                     .connect(compressorNode)
                     .connect(audioCtx.destination);
-
-                console.log("Web Audio API DSP pipeline successfully initialized.");
             } catch (e) {
                 console.error("Web Audio API initialization failed:", e);
             }
@@ -571,7 +574,6 @@
             }
         }
 
-        // Fetch music files from GitHub REST API
         async function fetchGitHubMusic() {
             const syncIcon = document.getElementById('syncIcon');
             if (syncIcon) syncIcon.classList.add('fa-spin');
@@ -592,15 +594,12 @@
                 }
                 const data = await response.json();
                 
-                // Filter files by audio extensions (.mp3, .wav, .m4a, .ogg)
                 const audioExtensions = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
                 const fetchedTracks = data
                     .filter(item => item.type === 'file' && audioExtensions.some(ext => item.name.toLowerCase().endsWith(ext)))
                     .map(item => {
-                        // Raw download URL for GitHub file
                         const rawUrl = `https://raw.githubusercontent.com/${repoConfig.owner}/${repoConfig.repo}/${repoConfig.branch}/${item.path}`;
                         
-                        // Clean up title and artist from filename
                         let cleanName = item.name.substring(0, item.name.lastIndexOf('.'));
                         let artist = repoConfig.owner;
                         let title = cleanName;
@@ -626,7 +625,7 @@
                     renderTrackList();
                     showNotification(`Успешно загружено треков: ${tracks.length} из GitHub!`, 'success');
                 } else {
-                    showNotification('В репозитории не найдено аудиофайлов (.mp3, .wav и т.д.). Загружены демо-треки.', 'warning');
+                    showNotification('В репозитории не найдено аудиофайлов. Загружены демо-треки.', 'warning');
                     loadDemoTracks();
                 }
             } catch (error) {
@@ -638,7 +637,6 @@
             }
         }
 
-        // Render the tracklist table HTML
         function renderTrackList() {
             const container = document.getElementById('trackList');
             document.getElementById('trackCount').textContent = `${filteredTracks.length} треков`;
@@ -679,7 +677,7 @@
                                 <i class="fa-solid fa-download text-xs"></i>
                             </a>
                             <button onclick="event.stopPropagation(); selectAndPlayTrack('${track.download_url}')" class="w-8 h-8 rounded-full bg-zinc-800 group-hover:bg-emerald-600 text-zinc-300 group-hover:text-white flex items-center justify-center transition-all shadow-sm">
-                                <i class="fa-solid fa-play text-[10px] ${isCurrent && isPlaying ? 'fa-pause' : ''}"></i>
+                                <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play'} text-[10px]"></i>
                             </button>
                         </div>
                     </div>
@@ -698,7 +696,6 @@
         function selectAndPlayTrack(url) {
             const index = tracks.findIndex(t => t.download_url === url);
             if (index !== -1) {
-                // If clicking the currently loaded track
                 if (currentIndex === index && audio.src) {
                     togglePlayPause();
                     return;
@@ -717,52 +714,43 @@
             document.getElementById('currentTitle').textContent = track.title;
             document.getElementById('currentArtist').textContent = track.artist;
 
-            // Generate dynamic cover gradient
             const coverDiv = document.getElementById('currentCover');
-            coverDiv.className = `w-12 h-12 rounded-xl bg-gradient-to-br ${getAvatarGradient(track.title)} flex items-center justify-center shrink-0 shadow-md overflow-hidden relative group`;
+            coverDiv.className = `w-12 h-12 rounded-xl bg-gradient-to-br ${getAvatarGradient(track.title)} flex items-center justify-center shrink-0 shadow-md overflow-hidden relative`;
 
             renderTrackList();
 
             if (playFlag) {
-                // Ensure audio context is resumed / started on user gesture
-                if (!audioCtx) {
-                    initAudioContext();
-                } else if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+                if (!audioCtx) initAudioContext();
+                else if (audioCtx.state === 'suspended') audioCtx.resume();
 
                 audio.play().then(() => {
                     isPlaying = true;
                     updatePlayPauseButton();
-                    renderTrackList();
                 }).catch(e => {
                     console.error('Playback error:', e);
-                    showNotification('Не удалось воспроизвести поток', 'error');
+                    isPlaying = false;
+                    updatePlayPauseButton();
                 });
             }
         }
 
         function togglePlayPause() {
             if (tracks.length === 0) return;
-            if (!audioCtx) {
-                initAudioContext();
-            } else if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
+            if (!audio.src && tracks.length > 0) {
+                loadTrack(0, true);
+                return;
             }
+
+            if (!audioCtx) initAudioContext();
+            else if (audioCtx.state === 'suspended') audioCtx.resume();
 
             if (isPlaying) {
                 audio.pause();
-                isPlaying = false;
             } else {
-                audio.play().then(() => {
-                    isPlaying = true;
-                }).catch(e => {
+                audio.play().catch(e => {
                     console.error('Playback error:', e);
-                    isPlaying = false;
                 });
             }
-            updatePlayPauseButton();
-            renderTrackList();
         }
 
         function updatePlayPauseButton() {
@@ -772,7 +760,6 @@
             }
         }
 
-        // Navigation controls
         function prevTrack() {
             if (tracks.length === 0) return;
             currentIndex = (currentIndex - 1 + tracks.length) % tracks.length;
@@ -823,17 +810,40 @@
         }
 
         function updateProgress() {
-            if (!audio.duration) return;
-            const progress = (audio.currentTime / audio.duration) * 100;
-            document.getElementById('progressBar').value = progress;
-            document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+            if (isSeeking) return;
+            const current = audio.currentTime || 0;
+            const duration = audio.duration || 0;
+            
+            document.getElementById('currentTime').textContent = formatTime(current);
+            if (duration > 0) {
+                document.getElementById('totalDuration').textContent = formatTime(duration);
+                const percent = (current / duration) * 100;
+                document.getElementById('progressBar').value = percent;
+            } else {
+                document.getElementById('progressBar').value = 0;
+            }
         }
 
         function seekTrack(val) {
-            if (!audio.duration) return;
-            const time = (val / 100) * audio.duration;
-            audio.currentTime = time;
+            isSeeking = true;
+            if (audio.duration) {
+                const targetTime = (val / 100) * audio.duration;
+                document.getElementById('currentTime').textContent = formatTime(targetTime);
+            }
         }
+
+        // On mouseup / touchend for progress bar to finalize seek
+        document.addEventListener('DOMContentLoaded', () => {
+            const pBar = document.getElementById('progressBar');
+            if (pBar) {
+                pBar.addEventListener('change', (e) => {
+                    if (audio.duration) {
+                        audio.currentTime = (e.target.value / 100) * audio.duration;
+                    }
+                    isSeeking = false;
+                });
+            }
+        });
 
         function setVolume(val) {
             const vol = val / 100;
@@ -843,7 +853,6 @@
         }
 
         function toggleMute() {
-            const muteBtnIcon = document.querySelector('#muteBtn i');
             if (!isMuted) {
                 previousVolume = audio.volume;
                 audio.volume = 0;
@@ -859,6 +868,7 @@
 
         function updateMuteButtonUI() {
             const muteBtn = document.querySelector('#muteBtn i');
+            if (!muteBtn) return;
             if (isMuted || audio.volume === 0) {
                 muteBtn.className = "fa-solid fa-volume-xmark text-rose-400";
             } else if (audio.volume < 0.5) {
@@ -875,65 +885,10 @@
         }
 
         function formatTime(seconds) {
+            if (isNaN(seconds) || seconds < 0) return "0:00";
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-        }
-
-        function loadTrack(index, playFlag = true) {
-            if (tracks.length === 0) return;
-            currentIndex = index;
-            const track = tracks[currentIndex];
-
-            audio.src = track.download_url;
-            document.getElementById('currentTitle').textContent = track.title;
-            document.getElementById('currentArtist').textContent = track.artist;
-
-            // Generate dynamic cover gradient
-            const coverDiv = document.getElementById('currentCover');
-            coverDiv.className = `w-12 h-12 rounded-xl bg-gradient-to-br ${getAvatarGradient(track.title)} flex items-center justify-center shrink-0 shadow-md overflow-hidden relative group`;
-
-            renderTrackList();
-
-            if (playFlag) {
-                // Ensure audio context is resumed / started on user gesture
-                if (!audioCtx) {
-                    initAudioContext();
-                } else if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-
-                audio.play().then(() => {
-                    isPlaying = true;
-                    updatePlayPauseButton();
-                }).catch(e => {
-                    console.error('Playback error:', e);
-                    showNotification('Не удалось воспроизвести поток', 'error');
-                });
-            }
-        }
-
-        function togglePlayPause() {
-            if (tracks.length === 0) return;
-            if (!audioCtx) {
-                initAudioContext();
-            } else if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-            } else {
-                audio.play().then(() => {
-                    isPlaying = true;
-                }).catch(e => {
-                    console.error('Playback error:', e);
-                });
-            }
-            updatePlayPauseButton();
-            renderTrackList();
         }
 
         // Audio Settings & Hardcore Bass controls
@@ -1048,7 +1003,6 @@
             applyPreset('flat');
         }
 
-        // Modal Management
         function openConfigModal() {
             document.getElementById('inputOwner').value = repoConfig.owner;
             document.getElementById('inputRepo').value = repoConfig.repo;
@@ -1090,7 +1044,6 @@
             showNotification('Сброшено на демо-режим', 'info');
         }
 
-        // Helper: Consistent gradient generator based on string
         function getAvatarGradient(str) {
             const gradients = [
                 "from-emerald-600 to-teal-800",
@@ -1113,7 +1066,6 @@
             );
         }
 
-        // Toast notification helper
         function showNotification(message, type = 'success') {
             const existing = document.getElementById('toastNotification');
             if (existing) existing.remove();
