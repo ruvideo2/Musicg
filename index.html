@@ -177,7 +177,7 @@
                     <span>Инструкция</span>
                 </h3>
                 <p class="text-xs text-zinc-400 leading-relaxed">
-                    Если треки останавливаются или не воспроизводятся, проверьте интернет-соединение или воспользуйтесь загрузкой с ПК.
+                    Если треки останавливаются в фоне, убедитесь, что приложению разрешена фоновая активность в настройках телефона.
                 </p>
             </div>
         </div>
@@ -393,6 +393,7 @@
         let isMuted = false;
         let previousVolume = 0.8;
         let isSeeking = false;
+        let wakeLock = null;
 
         let audioCtx = null;
         let sourceNode = null;
@@ -401,7 +402,6 @@
         let midsFilter = null;
         let highsFilter = null;
 
-        // Load saved EQ settings from localStorage or use defaults
         let savedEQ = {
             subBass: parseFloat(localStorage.getItem('gitbeat_eq_sub') ?? '15'),
             midBass: parseFloat(localStorage.getItem('gitbeat_eq_mid') ?? '12'),
@@ -420,7 +420,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             updateConfigUI();
             
-            // Set slider UI values from saved settings
             document.getElementById('subBassSlider').value = savedEQ.subBass;
             document.getElementById('subBassVal').textContent = savedEQ.subBass + ' дБ';
             document.getElementById('midBassSlider').value = savedEQ.midBass;
@@ -452,13 +451,35 @@
             audio.addEventListener('loadedmetadata', () => {
                 document.getElementById('totalDuration').textContent = formatTime(audio.duration || 0);
             });
-            audio.addEventListener('play', () => { isPlaying = true; updatePlayPauseButton(); renderTrackList(); });
-            audio.addEventListener('pause', () => { isPlaying = false; updatePlayPauseButton(); renderTrackList(); });
+            audio.addEventListener('play', () => { 
+                isPlaying = true; 
+                updatePlayPauseButton(); 
+                renderTrackList(); 
+                requestWakeLock();
+            });
+            audio.addEventListener('pause', () => { 
+                isPlaying = false; 
+                updatePlayPauseButton(); 
+                renderTrackList(); 
+                releaseWakeLock();
+            });
 
-            // Resume AudioContext on visibility change (mobile tab switches / screen lock prevention)
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden && audioCtx && audioCtx.state === 'suspended') {
-                    audioCtx.resume().catch(err => console.error("AudioCtx resume error:", err));
+            // Enhanced Background Playback & AudioContext Recovery for Mobile
+            document.addEventListener('visibilitychange', async () => {
+                if (document.hidden) {
+                    // Page is in background - ensure audioCtx and audio are kept alive
+                    if (audioCtx && audioCtx.state === 'suspended') {
+                        try { await audioCtx.resume(); } catch (e) {}
+                    }
+                } else {
+                    // Page returned to foreground
+                    if (audioCtx && audioCtx.state === 'suspended') {
+                        try { await audioCtx.resume(); } catch (err) { console.error("AudioCtx resume error:", err); }
+                    }
+                    if (isPlaying && audio.paused) {
+                        try { await audio.play(); } catch (e) { console.log("Background resume play error:", e); }
+                    }
+                    requestWakeLock();
                 }
             });
 
@@ -479,6 +500,24 @@
             }
         });
 
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator && !wakeLock) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                } catch (err) {
+                    console.log('Wake Lock request failed:', err);
+                }
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release().then(() => {
+                    wakeLock = null;
+                }).catch(err => console.log('Wake Lock release failed:', err));
+            }
+        }
+
         function initAudioContext() {
             if (audioCtx) {
                 if (audioCtx.state === 'suspended') {
@@ -491,33 +530,28 @@
                 audioCtx = new AudioContextClass();
                 sourceNode = audioCtx.createMediaElementSource(audio);
 
-                // Sub-Bass (30 Hz)
                 subBassFilter = audioCtx.createBiquadFilter();
                 subBassFilter.type = 'lowshelf';
                 subBassFilter.frequency.value = 45;
                 subBassFilter.gain.value = savedEQ.subBass;
 
-                // Mid-Bass (90 Hz)
                 midBassFilter = audioCtx.createBiquadFilter();
                 midBassFilter.type = 'peaking';
                 midBassFilter.frequency.value = 95;
                 midBassFilter.Q.value = 1.2;
                 midBassFilter.gain.value = savedEQ.midBass;
 
-                // Mids (1 kHz)
                 midsFilter = audioCtx.createBiquadFilter();
                 midsFilter.type = 'peaking';
                 midsFilter.frequency.value = 1000;
                 midsFilter.Q.value = 1.0;
                 midsFilter.gain.value = savedEQ.mids;
 
-                // Highs (12 kHz)
                 highsFilter = audioCtx.createBiquadFilter();
                 highsFilter.type = 'highshelf';
                 highsFilter.frequency.value = 10000;
                 highsFilter.gain.value = savedEQ.highs;
 
-                // Connect chain: Source -> SubBass -> MidBass -> Mids -> Highs -> Destination
                 sourceNode.connect(subBassFilter);
                 subBassFilter.connect(midBassFilter);
                 midBassFilter.connect(midsFilter);
@@ -687,7 +721,6 @@
 
             renderTrackList();
 
-            // Setup Media Session API for mobile background playback & lock screen controls
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: track.title,
@@ -895,7 +928,7 @@
         }
 
         async function saveConfig() {
-            repoConfig.owner = document.getElementById('inputOwner').value.trim();
+            repoConfig.owner = document.getElementById('inputOwner'].value.trim();
             repoConfig.repo = document.getElementById('inputRepo').value.trim();
             repoConfig.branch = document.getElementById('inputBranch').value.trim() || 'main';
 
