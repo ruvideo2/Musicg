@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitBeat - GitHub Music Streamer</title>
+    <title>GitBeat - GitHub Music Streamer & Audio Suite</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -65,7 +65,7 @@
             height: 14px;
             width: 14px;
             border-radius: 50%;
-            background: #10b981;
+            background: var(--accent-color, #10b981);
             cursor: pointer;
             -webkit-appearance: none;
             margin-top: -4px;
@@ -74,25 +74,34 @@
         input[type=range]::-webkit-slider-thumb:hover {
             transform: scale(1.2);
         }
+        .theme-emerald { --accent-color: #10b981; }
+        .theme-purple { --accent-color: #a855f7; }
+        .theme-cyan { --accent-color: #06b6d4; }
+        .theme-rose { --accent-color: #f43f5e; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+<body class="min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white theme-emerald" id="bodyRoot">
 
-    <header class="border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-3 flex items-center justify-between">
+    <!-- Top Header -->
+    <header class="border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-900/30">
+            <div id="logoBox" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-900/30 transition-all">
                 <i class="fa-solid fa-music text-white text-lg"></i>
             </div>
             <div>
                 <h1 class="font-bold text-lg tracking-wide bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">GitBeat</h1>
-                <p class="text-xs text-zinc-400">GitHub Music Streamer & Hardcore Bass</p>
+                <p class="text-xs text-zinc-400">GitHub Music Streamer & Visualizer</p>
             </div>
         </div>
 
         <div class="flex items-center space-x-2 sm:space-x-3">
+            <button onclick="openVisualizerModal()" class="hidden sm:flex items-center space-x-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-emerald-400 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-sm">
+                <i class="fa-solid fa-chart-line text-sm"></i>
+                <span>Визуализатор</span>
+            </button>
             <button onclick="openAudioSettings()" class="flex items-center space-x-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-emerald-400 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-sm">
                 <i class="fa-solid fa-sliders text-sm"></i>
-                <span class="hidden sm:inline">Эквалайзер & Бас</span>
+                <span class="hidden sm:inline">Эквалайзер</span>
             </button>
             <button onclick="openConfigModal()" class="flex items-center space-x-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-zinc-200 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-sm">
                 <i class="fa-brands fa-github text-sm"></i>
@@ -105,10 +114,12 @@
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6 pb-36">
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6 pb-40">
         
-        <!-- Left Sidebar / Info Panel -->
+        <!-- Left Sidebar -->
         <div class="lg:col-span-1 space-y-6">
+            <!-- Repo Info Card -->
             <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
                 <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 flex items-center justify-between">
                     <span>Репозиторий</span>
@@ -123,13 +134,32 @@
                         <span class="text-zinc-500">Репозиторий:</span>
                         <span id="lblRepo" class="font-medium text-zinc-300 truncate max-w-[140px]">Musicg</span>
                     </div>
-                    <div class="flex justify-between py-1">
+                    <div class="flex justify-between py-1 border-b border-zinc-800/60">
                         <span class="text-zinc-500">Ветка:</span>
                         <span id="lblBranch" class="font-medium text-zinc-300 truncate max-w-[140px]">main</span>
                     </div>
+                    <div class="flex justify-between py-1">
+                        <span class="text-zinc-500">Папка:</span>
+                        <span id="lblFolder" class="font-medium text-zinc-300 truncate max-w-[140px]">корень</span>
+                    </div>
+                </div>
+                <div id="folderBreadcrumb" class="mt-3 pt-3 border-t border-zinc-800 flex flex-wrap gap-1.5 text-[11px]">
+                    <!-- Breadcrumbs inserted dynamically -->
                 </div>
                 <button onclick="openConfigModal()" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 rounded-xl text-xs font-medium transition-all text-center border border-zinc-700/50">
                     Изменить репозиторий
+                </button>
+            </div>
+
+            <!-- Tabs / Filter Card -->
+            <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-4 backdrop-blur-sm shadow-xl space-y-2">
+                <button onclick="switchTab('all')" id="tabAll" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
+                    <span class="flex items-center space-x-2"><i class="fa-solid fa-list-music"></i><span>Все треки</span></span>
+                    <span id="badgeCountAll" class="bg-emerald-500/20 px-2 py-0.5 rounded-full text-[10px]">0</span>
+                </button>
+                <button onclick="switchTab('favorites')" id="tabFavorites" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all bg-zinc-950/60 text-zinc-400 hover:text-zinc-200 border border-zinc-800">
+                    <span class="flex items-center space-x-2"><i class="fa-solid fa-heart text-rose-500"></i><span>Избранное</span></span>
+                    <span id="badgeCountFav" class="bg-zinc-800 px-2 py-0.5 rounded-full text-[10px]">0</span>
                 </button>
             </div>
 
@@ -140,31 +170,36 @@
                     <span>Загрузка с ПК</span>
                 </h3>
                 <p class="text-[11px] text-zinc-400 leading-relaxed">
-                    Если GitHub API выдает ошибку или лимит, вы можете загрузить свои аудиофайлы прямо с компьютера:
+                    Добавляйте локальные MP3/WAV файлы в плейлист в один клик:
                 </p>
                 <label class="block w-full text-center bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all">
-                    <i class="fa-solid fa-upload mr-1.5"></i> Выбрать MP3 файлы
+                    <i class="fa-solid fa-upload mr-1.5"></i> Выбрать файлы
                     <input type="file" id="localFileInput" accept="audio/*" multiple onchange="handleLocalFiles(event)" class="hidden">
                 </label>
             </div>
 
-            <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-5 shadow-xl">
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2 flex items-center space-x-1.5">
-                    <i class="fa-solid fa-circle-info text-emerald-400"></i>
-                    <span>Инструкция</span>
+            <!-- Theme Switcher -->
+            <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 shadow-xl space-y-3">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-palette text-emerald-400"></i>
+                    <span>Цветовая тема</span>
                 </h3>
-                <p class="text-xs text-zinc-400 leading-relaxed">
-                    Если треки не отображаются, проверьте доступность репозитория <b class="text-zinc-200">ruvideo2/Musicg</b> или воспользуйтесь демо-треками / загрузкой с ПК.
-                </p>
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="setTheme('emerald')" class="h-8 rounded-xl bg-emerald-500 shadow-md transition-transform hover:scale-105" title="Emerald"></button>
+                    <button onclick="setTheme('purple')" class="h-8 rounded-xl bg-purple-500 shadow-md transition-transform hover:scale-105" title="Purple"></button>
+                    <button onclick="setTheme('cyan')" class="h-8 rounded-xl bg-cyan-500 shadow-md transition-transform hover:scale-105" title="Cyan"></button>
+                    <button onclick="setTheme('rose')" class="h-8 rounded-xl bg-rose-500 shadow-md transition-transform hover:scale-105" title="Rose"></button>
+                </div>
             </div>
         </div>
 
-        <!-- Right Playlist Section -->
+        <!-- Right Playlist & Visualizer Section -->
         <div class="lg:col-span-3 space-y-4">
+            <!-- Search & Controls Bar -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-3 backdrop-blur-sm">
                 <div class="relative w-full sm:w-72">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-                    <input type="text" id="searchInput" oninput="filterTracks()" placeholder="Поиск треков..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-all">
+                    <input type="text" id="searchInput" oninput="filterTracks()" placeholder="Поиск треков или исполнителя..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-all">
                 </div>
                 <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
                     <span id="trackCount" class="text-xs text-zinc-500 px-2">0 треков</span>
@@ -175,25 +210,40 @@
                 </div>
             </div>
 
-            <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-sm shadow-xl min-h-[400px] flex flex-col">
+            <!-- Mini Live Canvas Visualizer Preview Card -->
+            <div onclick="openVisualizerModal()" class="bg-gradient-to-r from-zinc-900/90 via-zinc-950 to-zinc-900 border border-zinc-800/80 rounded-2xl p-4 cursor-pointer hover:border-emerald-500/50 transition-all shadow-xl relative overflow-hidden group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-zinc-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-wave-square text-emerald-400 animate-pulse"></i>
+                        <span>Аудиоспектр в реальном времени</span>
+                    </span>
+                    <span class="text-[10px] text-zinc-500 group-hover:text-emerald-400 transition-colors">Открыть на весь экран <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></span>
+                </div>
+                <canvas id="miniVisualizer" class="w-full h-16 rounded-xl bg-zinc-950/80"></canvas>
+            </div>
+
+            <!-- Track List Table Container -->
+            <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-sm shadow-xl min-h-[420px] flex flex-col">
                 <div class="grid grid-cols-12 px-4 py-3 border-b border-zinc-800 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
                     <div class="col-span-1 text-center">#</div>
-                    <div class="col-span-7 sm:col-span-6">Название / Исполнитель</div>
-                    <div class="col-span-3 hidden sm:block">Источник</div>
-                    <div class="col-span-4 sm:col-span-2 text-right pr-3">Действия</div>
+                    <div class="col-span-6 sm:col-span-6">Название / Исполнитель</div>
+                    <div class="col-span-3 hidden sm:block">Источник / Папка</div>
+                    <div class="col-span-5 sm:col-span-2 text-right pr-3">Действия</div>
                 </div>
 
-                <div id="trackList" class="divide-y divide-zinc-800/40 flex-1 overflow-y-auto max-h-[550px]">
-                    <!-- Tracks rendered dynamically -->
+                <div id="trackList" class="divide-y divide-zinc-800/40 flex-1 overflow-y-auto max-h-[520px]">
+                    <!-- Rendered dynamically -->
                 </div>
             </div>
         </div>
 
     </main>
 
+    <!-- Bottom Audio Player Footer -->
     <footer class="fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/95 border-t border-zinc-800/80 backdrop-blur-xl px-4 py-3 shadow-2xl">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 items-center gap-4">
             
+            <!-- Currently Playing Info -->
             <div class="flex items-center space-x-3 min-w-0">
                 <div id="currentCover" class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-zinc-800 flex items-center justify-center shrink-0 shadow-md overflow-hidden relative">
                     <i class="fa-solid fa-music text-zinc-300 text-base" id="currentCoverIcon"></i>
@@ -202,10 +252,14 @@
                     <h4 id="currentTitle" class="text-xs font-semibold text-zinc-100 truncate">Выберите трек</h4>
                     <p id="currentArtist" class="text-[11px] text-zinc-400 truncate">GitBeat Player</p>
                 </div>
+                <button onclick="toggleFavoriteCurrent()" id="currentFavBtn" class="text-zinc-500 hover:text-rose-500 text-sm p-2 transition-colors">
+                    <i class="fa-regular fa-heart" id="currentFavIcon"></i>
+                </button>
             </div>
 
+            <!-- Playback Controls & Timeline -->
             <div class="flex flex-col items-center space-y-1.5 w-full">
-                <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-5">
                     <button onclick="toggleShuffle()" id="shuffleBtn" class="text-zinc-400 hover:text-zinc-100 text-xs transition-colors" title="Перемешать">
                         <i class="fa-solid fa-shuffle"></i>
                     </button>
@@ -230,16 +284,30 @@
                 </div>
             </div>
 
-            <div class="hidden md:flex items-center justify-end space-x-3">
-                <button onclick="toggleMute()" id="muteBtn" class="text-zinc-400 hover:text-zinc-200 text-xs p-1">
-                    <i class="fa-solid fa-volume-high"></i>
-                </button>
-                <input type="range" id="volumeBar" value="80" min="0" max="100" oninput="setVolume(this.value)" class="w-28 cursor-pointer">
+            <!-- Volume & Speed Controls -->
+            <div class="hidden md:flex items-center justify-end space-x-4">
+                <div class="flex items-center space-x-1.5 bg-zinc-900 border border-zinc-800 rounded-xl px-2.5 py-1 text-xs">
+                    <span class="text-zinc-500 font-medium text-[10px]">Скорость:</span>
+                    <select id="playbackSpeed" onchange="changeSpeed(this.value)" class="bg-transparent text-zinc-200 font-semibold focus:outline-none cursor-pointer">
+                        <option value="0.75" class="bg-zinc-900">0.75x</option>
+                        <option value="1" selected class="bg-zinc-900">1.0x</option>
+                        <option value="1.25" class="bg-zinc-900">1.25x</option>
+                        <option value="1.5" class="bg-zinc-900">1.5x</option>
+                        <option value="2" class="bg-zinc-900">2.0x</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleMute()" id="muteBtn" class="text-zinc-400 hover:text-zinc-200 text-xs p-1">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <input type="range" id="volumeBar" value="80" min="0" max="100" oninput="setVolume(this.value)" class="w-24 cursor-pointer">
+                </div>
             </div>
 
         </div>
     </footer>
 
+    <!-- GitHub Repository Config Modal -->
     <div id="configModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <div class="flex items-center justify-between mb-4">
@@ -264,10 +332,6 @@
                     <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Ветка</label>
                     <input type="text" id="inputBranch" value="main" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
-                <div>
-                    <label class="block font-semibold text-zinc-400 uppercase tracking-wider mb-1">Папка (опционально)</label>
-                    <input type="text" id="inputFolder" placeholder="оставьте пустым для корня" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
-                </div>
             </div>
             <div class="mt-6 flex items-center justify-between">
                 <button onclick="loadDemoTracks()" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold px-2 py-2">Демо-треки</button>
@@ -281,6 +345,7 @@
         </div>
     </div>
 
+    <!-- Audio DSP & Equalizer Modal -->
     <div id="audioSettingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
@@ -348,6 +413,30 @@
         </div>
     </div>
 
+    <!-- Fullscreen Visualizer Modal -->
+    <div id="visualizerModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl hidden flex flex-col justify-between p-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-base text-zinc-100">Живой Аудиовизуализатор</h3>
+                    <p id="visTrackTitle" class="text-xs text-zinc-400">Трек не выбран</p>
+                </div>
+            </div>
+            <button onclick="closeVisualizerModal()" class="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="flex-1 flex items-center justify-center py-6">
+            <canvas id="fullscreenVisualizer" class="w-full h-full max-h-[600px] rounded-3xl bg-zinc-950/80 border border-zinc-800/80 shadow-2xl"></canvas>
+        </div>
+        <div class="text-center text-xs text-zinc-500">
+            GitBeat Audio Engine • Web Audio API Analyser
+        </div>
+    </div>
+
     <audio id="audioPlayer" crossorigin="anonymous"></audio>
 
     <script>
@@ -357,26 +446,31 @@
                 title: "Cyberpunk Sunrise",
                 artist: "GitBeat Synthwave",
                 download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-                source: "Демо Трек"
+                source: "Демо Трек",
+                path: ""
             },
             {
                 name: "LoFi Study Session.mp3",
                 title: "LoFi Study Session",
                 artist: "Chillhop GitHub",
                 download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-                source: "Демо Трек"
+                source: "Демо Трек",
+                path: ""
             },
             {
                 name: "Bass Test Track.mp3",
                 title: "Hardbass Anthem",
                 artist: "GitBeat Audio",
                 download_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-                source: "Демо Трек"
+                source: "Демо Трек",
+                path: ""
             }
         ];
 
         let tracks = [];
         let filteredTracks = [];
+        let currentTab = 'all'; // 'all' or 'favorites'
+        let favorites = JSON.parse(localStorage.getItem('gitbeat_favorites') || '[]');
         let currentIndex = 0;
         let isPlaying = false;
         let isShuffle = false;
@@ -387,6 +481,7 @@
 
         let audioCtx = null;
         let sourceNode = null;
+        let analyserNode = null;
         let bassFilterNode = null;
         let subBassFilterNode = null;
         let eqLowNode = null;
@@ -398,12 +493,14 @@
             owner: localStorage.getItem('gitbeat_owner') !== null ? localStorage.getItem('gitbeat_owner') : 'ruvideo2',
             repo: localStorage.getItem('gitbeat_repo') !== null ? localStorage.getItem('gitbeat_repo') : 'Musicg',
             branch: localStorage.getItem('gitbeat_branch') || 'main',
-            folder: localStorage.getItem('gitbeat_folder') || ''
+            currentFolder: ''
         };
 
+        let currentTheme = localStorage.getItem('gitbeat_theme') || 'emerald';
         const audio = document.getElementById('audioPlayer');
 
         window.addEventListener('DOMContentLoaded', () => {
+            setTheme(currentTheme, false);
             updateConfigUI();
             
             if (repoConfig.owner && repoConfig.repo) {
@@ -447,6 +544,8 @@
                     isSeeking = false;
                 });
             }
+
+            requestAnimationFrame(visualizerLoop);
         });
 
         function initAudioContext() {
@@ -456,6 +555,9 @@
                 audioCtx = new AudioContextClass();
 
                 sourceNode = audioCtx.createMediaElementSource(audio);
+
+                analyserNode = audioCtx.createAnalyser();
+                analyserNode.fftSize = 128;
 
                 subBassFilterNode = audioCtx.createBiquadFilter();
                 subBassFilterNode.type = 'lowshelf';
@@ -495,6 +597,7 @@
                     .connect(eqMidNode)
                     .connect(eqHighNode)
                     .connect(compressorNode)
+                    .connect(analyserNode)
                     .connect(audioCtx.destination);
 
                 applySavedDSPConfig();
@@ -503,33 +606,38 @@
             }
         }
 
-        async function fetchGitHubMusic() {
+        async function fetchGitHubMusic(folderPath = '') {
             const syncIcon = document.getElementById('syncIcon');
             if (syncIcon) syncIcon.classList.add('fa-spin');
+
+            repoConfig.currentFolder = folderPath;
+            updateConfigUI();
 
             if (!repoConfig.owner || !repoConfig.repo) {
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
                 return;
             }
 
-            const pathParam = repoConfig.folder ? `/${repoConfig.folder}` : '';
+            const pathParam = folderPath ? `/${folderPath}` : '';
             const apiUrl = `https://api.github.com/repos/${repoConfig.owner}/${repoConfig.repo}/contents${pathParam}?ref=${repoConfig.branch}`;
 
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     if (response.status === 403) {
-                        throw new Error('Превышен лимит запросов GitHub API (Rate limit). Включите демо-треки или загрузите свои.');
+                        throw new Error('Превышен лимит запросов GitHub API. Включите демо-треки.');
                     } else if (response.status === 404) {
-                        throw new Error('Репозиторий или папка не найдены / приватный репозиторий.');
+                        throw new Error('Репозиторий или папка не найдены.');
                     } else {
-                        throw new Error(`GitHub API Error: ${response.status} (${response.statusText})`);
+                        throw new Error(`GitHub API Error: ${response.status}`);
                     }
                 }
                 const data = await response.json();
                 
+                const items = Array.isArray(data) ? data : [data];
                 const audioExtensions = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
-                const fetchedTracks = (Array.isArray(data) ? data : [data])
+
+                const fetchedTracks = items
                     .filter(item => item.type === 'file' && audioExtensions.some(ext => item.name.toLowerCase().endsWith(ext)))
                     .map(item => {
                         const rawUrl = `https://raw.githubusercontent.com/${repoConfig.owner}/${repoConfig.repo}/${repoConfig.branch}/${item.path}`;
@@ -548,27 +656,61 @@
                             title: title,
                             artist: artist,
                             download_url: rawUrl,
-                            source: `${repoConfig.owner}/${repoConfig.repo}`
+                            source: repoConfig.repo,
+                            path: item.path
                         };
                     });
+
+                // Also check if there are subfolders to navigate
+                const subFolders = items.filter(item => item.type === 'dir');
+                renderBreadcrumbs(subFolders);
 
                 if (fetchedTracks.length > 0) {
                     tracks = fetchedTracks;
                     filterTracks();
-                    showNotification(`Загружено треков из GitHub: ${tracks.length}`, 'success');
+                    showNotification(`Загружено треков: ${tracks.length}`, 'success');
+                } else if (subFolders.length > 0) {
+                    tracks = [];
+                    filterTracks();
+                    showNotification('Папка содержит поддиректории. Кликните для перехода.', 'info');
                 } else {
                     tracks = [...defaultTracks];
                     filterTracks();
-                    showNotification('В репозитории нет .mp3 файлов. Загружены демо-треки.', 'warning');
+                    showNotification('В папке нет MP3 файлов. Загружены демо-треки.', 'warning');
                 }
             } catch (error) {
                 console.error('GitHub fetch error:', error);
                 tracks = [...defaultTracks];
                 filterTracks();
-                showNotification(error.message || 'Ошибка загрузки из GitHub. Включены демо-треки.', 'error');
+                showNotification(error.message || 'Ошибка загрузки GitHub. Включены демо-треки.', 'error');
             } finally {
                 if (syncIcon) syncIcon.classList.remove('fa-spin');
             }
+        }
+
+        function renderBreadcrumbs(subFolders = []) {
+            const container = document.getElementById('folderBreadcrumb');
+            if (!container) return;
+
+            let html = `<button onclick="fetchGitHubMusic('')" class="text-emerald-400 hover:underline">/корень</button>`;
+            if (repoConfig.currentFolder) {
+                const parts = repoConfig.currentFolder.split('/');
+                let accumulated = '';
+                parts.forEach((p, idx) => {
+                    accumulated += (idx === 0 ? p : '/' + p);
+                    const pathCopy = accumulated;
+                    html += ` / <button onclick="fetchGitHubMusic('${pathCopy}')" class="text-emerald-400 hover:underline">${p}</button>`;
+                });
+            }
+
+            if (subFolders.length > 0) {
+                html += `<div class="w-full mt-2 pt-2 border-t border-zinc-800 text-zinc-400">Подпапки:</div>`;
+                subFolders.forEach(dir => {
+                    html += `<button onclick="fetchGitHubMusic('${dir.path}')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-2 py-1 rounded text-[10px] mr-1 mb-1"><i class="fa-solid fa-folder mr-1 text-emerald-400"></i>${dir.name}</button>`;
+                });
+            }
+
+            container.innerHTML = html;
         }
 
         function handleLocalFiles(event) {
@@ -591,13 +733,46 @@
                     title: title,
                     artist: artist,
                     download_url: URL.createObjectURL(file),
-                    source: "ПК (Локально)"
+                    source: "ПК",
+                    path: file.name
                 };
             });
 
             tracks = [...newLocalTracks, ...tracks];
             filterTracks();
             showNotification(`Загружено локальных треков: ${newLocalTracks.length}`, 'success');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnAll = document.getElementById('tabAll');
+            const btnFav = document.getElementById('tabFavorites');
+
+            if (tab === 'all') {
+                btnAll.className = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-emerald-600/20 text-emerald-400 border border-emerald-500/30";
+                btnFav.className = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all bg-zinc-950/60 text-zinc-400 hover:text-zinc-200 border border-zinc-800";
+            } else {
+                btnFav.className = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all bg-rose-600/20 text-rose-400 border border-rose-500/30";
+                btnAll.className = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all bg-zinc-950/60 text-zinc-400 hover:text-zinc-200 border border-zinc-800";
+            }
+            filterTracks();
+        }
+
+        function filterTracks() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            let list = tracks;
+            if (currentTab === 'favorites') {
+                list = tracks.filter(t => favorites.includes(t.download_url));
+            }
+
+            filteredTracks = list.filter(t => 
+                t.title.toLowerCase().includes(query) || t.artist.toLowerCase().includes(query)
+            );
+
+            document.getElementById('badgeCountAll').textContent = tracks.length;
+            document.getElementById('badgeCountFav').textContent = favorites.length;
+            renderTrackList();
         }
 
         function renderTrackList() {
@@ -611,7 +786,7 @@
                     <div class="py-16 text-center text-zinc-400 text-xs flex flex-col items-center justify-center space-y-3">
                         <i class="fa-solid fa-music text-3xl text-zinc-600"></i>
                         <p class="font-semibold text-zinc-300">Треки отсутствуют</p>
-                        <p class="text-zinc-500 max-w-sm">Нажмите кнопку «Загрузить с ПК» слева или настройте репозиторий.</p>
+                        <p class="text-zinc-500 max-w-sm">Загрузите файлы с компьютера или выберите другой источник.</p>
                     </div>
                 `;
                 return;
@@ -619,6 +794,7 @@
 
             container.innerHTML = filteredTracks.map((track, idx) => {
                 const isCurrent = tracks[currentIndex] && tracks[currentIndex].download_url === track.download_url;
+                const isFav = favorites.includes(track.download_url);
                 const gradientBg = getAvatarGradient(track.title);
 
                 return `
@@ -626,7 +802,7 @@
                         <div class="col-span-1 text-center text-xs text-zinc-500 group-hover:text-zinc-300">
                             ${isCurrent && isPlaying ? '<i class="fa-solid fa-volume-high text-emerald-400 animate-pulse"></i>' : idx + 1}
                         </div>
-                        <div class="col-span-7 sm:col-span-6 flex items-center space-x-3 min-w-0 pr-2">
+                        <div class="col-span-6 sm:col-span-6 flex items-center space-x-3 min-w-0 pr-2">
                             <div class="w-9 h-9 rounded-lg bg-gradient-to-br ${gradientBg} flex items-center justify-center shrink-0 shadow-inner">
                                 <i class="fa-solid fa-music text-white text-xs opacity-80"></i>
                             </div>
@@ -638,7 +814,10 @@
                         <div class="col-span-3 hidden sm:block text-xs text-zinc-500 truncate">
                             <span class="bg-zinc-800/80 px-2 py-0.5 rounded text-[10px] text-zinc-400">${track.source}</span>
                         </div>
-                        <div class="col-span-4 sm:col-span-2 text-right flex items-center justify-end space-x-2">
+                        <div class="col-span-5 sm:col-span-2 text-right flex items-center justify-end space-x-2">
+                            <button onclick="event.stopPropagation(); toggleFavorite('${track.download_url}')" class="text-zinc-500 hover:text-rose-500 p-1.5 transition-colors" title="Избранное">
+                                <i class="${isFav ? 'fa-solid text-rose-500' : 'fa-regular'} fa-heart text-xs"></i>
+                            </button>
                             <a href="${track.download_url}" target="_blank" onclick="event.stopPropagation()" class="text-zinc-500 hover:text-zinc-200 p-1.5 rounded-lg hover:bg-zinc-800 transition-colors" title="Скачать">
                                 <i class="fa-solid fa-download text-xs"></i>
                             </a>
@@ -651,12 +830,31 @@
             }).join('');
         }
 
-        function filterTracks() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            filteredTracks = tracks.filter(t => 
-                t.title.toLowerCase().includes(query) || t.artist.toLowerCase().includes(query)
-            );
-            renderTrackList();
+        function toggleFavorite(url) {
+            const idx = favorites.indexOf(url);
+            if (idx === -1) {
+                favorites.push(url);
+                showNotification('Добавлено в избранное', 'success');
+            } else {
+                favorites.splice(idx, 1);
+                showNotification('Удалено из избранного', 'info');
+            }
+            localStorage.setItem('gitbeat_favorites', JSON.stringify(favorites));
+            filterTracks();
+            updateCurrentFavBtn();
+        }
+
+        function toggleFavoriteCurrent() {
+            if (tracks[currentIndex]) {
+                toggleFavorite(tracks[currentIndex].download_url);
+            }
+        }
+
+        function updateCurrentFavBtn() {
+            const icon = document.getElementById('currentFavIcon');
+            if (!icon || !tracks[currentIndex]) return;
+            const isFav = favorites.includes(tracks[currentIndex].download_url);
+            icon.className = isFav ? "fa-solid text-rose-500" : "fa-regular";
         }
 
         function selectAndPlayTrack(url) {
@@ -678,8 +876,10 @@
             audio.src = track.download_url;
             document.getElementById('currentTitle').textContent = track.title;
             document.getElementById('currentArtist').textContent = track.artist;
+            document.getElementById('visTrackTitle').textContent = `${track.artist} - ${track.title}`;
 
             renderTrackList();
+            updateCurrentFavBtn();
 
             if (playFlag) {
                 if (!audioCtx) initAudioContext();
@@ -789,6 +989,10 @@
             }
         }
 
+        function changeSpeed(val) {
+            audio.playbackRate = parseFloat(val);
+        }
+
         function playAll() {
             if (tracks.length > 0) loadTrack(0, true);
         }
@@ -798,6 +1002,73 @@
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // Visualizer render loop
+        function visualizerLoop() {
+            requestAnimationFrame(visualizerLoop);
+            
+            drawCanvas('miniVisualizer');
+            const visModal = document.getElementById('visualizerModal');
+            if (visModal && !visModal.classList.contains('hidden')) {
+                drawCanvas('fullscreenVisualizer');
+            }
+        }
+
+        function drawCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+            }
+
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (!analyserNode || !isPlaying) {
+                ctx.fillStyle = '#16161a';
+                ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#52525b';
+                ctx.font = '12px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(isPlaying ? 'Анализ аудио...' : 'Пауза / Спектр ожидает', width / 2, height / 2);
+                return;
+            }
+
+            const bufferLength = analyserNode.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyserNode.getByteFrequencyData(dataArray);
+
+            const barWidth = (width / bufferLength) * 2.5;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = (dataArray[i] / 255) * height;
+
+                const gradient = ctx.createLinearGradient(0, height, 0, 0);
+                gradient.addColorStop(0, '#10b981');
+                gradient.addColorStop(0.5, '#06b6d4');
+                gradient.addColorStop(1, '#a855f7');
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, height - barHeight, barWidth - 1, barHeight);
+
+                x += barWidth + 1;
+            }
+        }
+
+        function openVisualizerModal() {
+            if (!audioCtx) initAudioContext();
+            document.getElementById('visualizerModal').classList.remove('hidden');
+        }
+
+        function closeVisualizerModal() {
+            document.getElementById('visualizerModal').classList.add('hidden');
         }
 
         function openAudioSettings() {
@@ -899,11 +1170,17 @@
             applyPreset('flat');
         }
 
+        function setTheme(themeName, save = true) {
+            currentTheme = themeName;
+            if (save) localStorage.setItem('gitbeat_theme', themeName);
+            const body = document.getElementById('bodyRoot');
+            body.className = `min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white theme-${themeName}`;
+        }
+
         function openConfigModal() {
             document.getElementById('inputOwner').value = repoConfig.owner;
             document.getElementById('inputRepo').value = repoConfig.repo;
             document.getElementById('inputBranch').value = repoConfig.branch || 'main';
-            document.getElementById('inputFolder').value = repoConfig.folder;
             document.getElementById('configModal').classList.remove('hidden');
         }
 
@@ -915,16 +1192,15 @@
             repoConfig.owner = document.getElementById('inputOwner').value.trim();
             repoConfig.repo = document.getElementById('inputRepo').value.trim();
             repoConfig.branch = document.getElementById('inputBranch').value.trim() || 'main';
-            repoConfig.folder = document.getElementById('inputFolder').value.trim();
+            repoConfig.currentFolder = '';
 
             localStorage.setItem('gitbeat_owner', repoConfig.owner);
             localStorage.setItem('gitbeat_repo', repoConfig.repo);
             localStorage.setItem('gitbeat_branch', repoConfig.branch);
-            localStorage.setItem('gitbeat_folder', repoConfig.folder);
 
             closeConfigModal();
             updateConfigUI();
-            await fetchGitHubMusic();
+            await fetchGitHubMusic('');
         }
 
         function loadDemoTracks() {
@@ -939,6 +1215,7 @@
             document.getElementById('lblOwner').textContent = repoConfig.owner || 'GitHub';
             document.getElementById('lblRepo').textContent = repoConfig.repo || 'Music Playlist';
             document.getElementById('lblBranch').textContent = repoConfig.branch || 'main';
+            document.getElementById('lblFolder').textContent = repoConfig.currentFolder || 'корень';
             
             if (repoConfig.owner && repoConfig.repo) {
                 document.getElementById('sourceBadge').textContent = 'GitHub API';
@@ -969,7 +1246,7 @@
 
             const toast = document.createElement('div');
             toast.id = 'toastNotification';
-            const bg = type === 'error' ? 'bg-rose-600' : type === 'warning' ? 'bg-amber-600' : 'bg-emerald-600';
+            const bg = type === 'error' ? 'bg-rose-600' : type === 'warning' ? 'bg-amber-600' : type === 'info' ? 'bg-cyan-600' : 'bg-emerald-600';
             toast.className = `fixed top-20 right-4 z-50 ${bg} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs font-medium flex items-center space-x-2`;
             toast.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>${message}</span>`;
             document.body.appendChild(toast);
