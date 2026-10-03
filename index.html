@@ -570,7 +570,7 @@
 
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('Ошибка API GitHub');
+                if (!response.ok) throw new Error('Ошибка API GitHub (возможно лимит запросов или неверный репозиторий)');
                 const data = await response.json();
                 
                 const audioExtensions = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
@@ -600,11 +600,14 @@
                 if (fetchedTracks.length > 0) {
                     tracks = fetchedTracks;
                 } else {
+                    // Если репозиторий пуст или нет аудиофайлов, используем демо-треки, чтобы список не был пустым
+                    console.warn("В репозитории не найдено аудиофайлов. Загружены демо-треки.");
                     tracks = [...defaultTracks];
                 }
                 renderTrackList();
             } catch (error) {
                 console.error('GitHub fetch error:', error);
+                // При ошибке API подгружаем демо-треки, чтобы интерфейс не пустовал
                 tracks = [...defaultTracks];
                 renderTrackList();
             } finally {
