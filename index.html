@@ -698,9 +698,187 @@
         function selectAndPlayTrack(url) {
             const index = tracks.findIndex(t => t.download_url === url);
             if (index !== -1) {
+                // If clicking the currently loaded track
+                if (currentIndex === index && audio.src) {
+                    togglePlayPause();
+                    return;
+                }
                 currentIndex = index;
                 loadTrack(currentIndex, true);
             }
+        }
+
+        function loadTrack(index, playFlag = true) {
+            if (tracks.length === 0) return;
+            currentIndex = index;
+            const track = tracks[currentIndex];
+
+            audio.src = track.download_url;
+            document.getElementById('currentTitle').textContent = track.title;
+            document.getElementById('currentArtist').textContent = track.artist;
+
+            // Generate dynamic cover gradient
+            const coverDiv = document.getElementById('currentCover');
+            coverDiv.className = `w-12 h-12 rounded-xl bg-gradient-to-br ${getAvatarGradient(track.title)} flex items-center justify-center shrink-0 shadow-md overflow-hidden relative group`;
+
+            renderTrackList();
+
+            if (playFlag) {
+                // Ensure audio context is resumed / started on user gesture
+                if (!audioCtx) {
+                    initAudioContext();
+                } else if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                audio.play().then(() => {
+                    isPlaying = true;
+                    updatePlayPauseButton();
+                    renderTrackList();
+                }).catch(e => {
+                    console.error('Playback error:', e);
+                    showNotification('Не удалось воспроизвести поток', 'error');
+                });
+            }
+        }
+
+        function togglePlayPause() {
+            if (tracks.length === 0) return;
+            if (!audioCtx) {
+                initAudioContext();
+            } else if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+            } else {
+                audio.play().then(() => {
+                    isPlaying = true;
+                }).catch(e => {
+                    console.error('Playback error:', e);
+                    isPlaying = false;
+                });
+            }
+            updatePlayPauseButton();
+            renderTrackList();
+        }
+
+        function updatePlayPauseButton() {
+            const icon = document.getElementById('playPauseIcon');
+            if (icon) {
+                icon.className = isPlaying ? "fa-solid fa-pause text-xs" : "fa-solid fa-play text-xs ml-0.5";
+            }
+        }
+
+        // Navigation controls
+        function prevTrack() {
+            if (tracks.length === 0) return;
+            currentIndex = (currentIndex - 1 + tracks.length) % tracks.length;
+            loadTrack(currentIndex, true);
+        }
+
+        function nextTrack() {
+            if (tracks.length === 0) return;
+            if (isShuffle) {
+                currentIndex = Math.floor(Math.random() * tracks.length);
+            } else {
+                currentIndex = (currentIndex + 1) % tracks.length;
+            }
+            loadTrack(currentIndex, true);
+        }
+
+        function handleTrackEnded() {
+            if (isRepeat) {
+                audio.currentTime = 0;
+                audio.play();
+            } else {
+                nextTrack();
+            }
+        }
+
+        function toggleShuffle() {
+            isShuffle = !isShuffle;
+            const btn = document.getElementById('shuffleBtn');
+            if (isShuffle) {
+                btn.classList.add('text-emerald-400');
+                showNotification('Перемешивание включено', 'info');
+            } else {
+                btn.classList.remove('text-emerald-400');
+                showNotification('Перемешивание выключено', 'info');
+            }
+        }
+
+        function toggleRepeat() {
+            isRepeat = !isRepeat;
+            const btn = document.getElementById('repeatBtn');
+            if (isRepeat) {
+                btn.classList.add('text-emerald-400');
+                showNotification('Повтор трека включен', 'info');
+            } else {
+                btn.classList.remove('text-emerald-400');
+                showNotification('Повтор трека выключен', 'info');
+            }
+        }
+
+        function updateProgress() {
+            if (!audio.duration) return;
+            const progress = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progressBar').value = progress;
+            document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+        }
+
+        function seekTrack(val) {
+            if (!audio.duration) return;
+            const time = (val / 100) * audio.duration;
+            audio.currentTime = time;
+        }
+
+        function setVolume(val) {
+            const vol = val / 100;
+            audio.volume = vol;
+            isMuted = (vol === 0);
+            updateMuteButtonUI();
+        }
+
+        function toggleMute() {
+            const muteBtnIcon = document.querySelector('#muteBtn i');
+            if (!isMuted) {
+                previousVolume = audio.volume;
+                audio.volume = 0;
+                document.getElementById('volumeBar').value = 0;
+                isMuted = true;
+            } else {
+                audio.volume = previousVolume || 0.8;
+                document.getElementById('volumeBar').value = audio.volume * 100;
+                isMuted = false;
+            }
+            updateMuteButtonUI();
+        }
+
+        function updateMuteButtonUI() {
+            const muteBtn = document.querySelector('#muteBtn i');
+            if (isMuted || audio.volume === 0) {
+                muteBtn.className = "fa-solid fa-volume-xmark text-rose-400";
+            } else if (audio.volume < 0.5) {
+                muteBtn.className = "fa-solid fa-volume-low";
+            } else {
+                muteBtn.className = "fa-solid fa-volume-high";
+            }
+        }
+
+        function playAll() {
+            if (tracks.length > 0) {
+                loadTrack(0, true);
+            }
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
         }
 
         function loadTrack(index, playFlag = true) {
